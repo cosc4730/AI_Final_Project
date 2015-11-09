@@ -117,24 +117,24 @@ int main(int argc, char** argv) {
     ActionVect minimal_actions = ale.getMinimalActionSet();
     
     // Actions for all minimal actions
-	Action noop = minimal_actions[0]
-	Action shoot = minimal_actions[1]
-	Action thrust = minimal_actions[2]
-	Action turnRight = minimal_actions[3]
-	Action turnLeft = minimal_actions[4]
-	Action shieldTractor = minimal_actions[5]
-	Action thrustRight = minimal_actions[6]
-	Action thrustLeft = minimal_actions[7]
-	Action shieldRight = minimal_actions[8]
-	Action shieldLeft = minimal_actions[9]
-	Action shootThrust = minimal_actions[10]
-	Action shootRight = minimal_actions[11]
-	Action shootLeft = minimal_actions[12]
-	Action shootShield = minimal_actions[13]
-	Action shootThrustRight = minimal_actions[14]
-	Action shootThrustLeft = minimal_actions[15]
-	Action shootShieldRight = minimal_actions[16]
-	Action shootShieldLeft = minimal_actions[17]
+	Action noop = minimal_actions[0];
+	Action shoot = minimal_actions[1];
+	Action thrust = minimal_actions[2];
+	Action turnRight = minimal_actions[3];
+	Action turnLeft = minimal_actions[4];
+	Action shieldTractor = minimal_actions[50];
+	Action thrustRight = minimal_actions[6];
+	Action thrustLeft = minimal_actions[7];
+	Action shieldRight = minimal_actions[8];
+	Action shieldLeft = minimal_actions[9];
+	Action shootThrust = minimal_actions[10];
+	Action shootRight = minimal_actions[11];
+	Action shootLeft = minimal_actions[12];
+	Action shootShield = minimal_actions[13];
+	Action shootThrustRight = minimal_actions[14];
+	Action shootThrustLeft = minimal_actions[15];
+	Action shootShieldRight = minimal_actions[16];
+	Action shootShieldLeft = minimal_actions[17];
     
     // Erase actions that move, but don't fire
     //minimal_actions.erase(minimal_actions.begin() + 2, minimal_actions.begin() + 10);
