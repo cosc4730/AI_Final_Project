@@ -385,6 +385,15 @@ void printScreen(ALEScreen screen){
     }
 }
 
+bool isOtherIntTriangle(Point one, Point two, Point three, ALEScreen screen){
+    int x = one.x();
+    int y = one.y();
+    while (x < ) {
+        <#statements#>
+    }
+    return true;
+}
+
 Point centerOfShip(ALEScreen screen){
     int count = 0;
     for (int y = 31; y < screen.height(); y++) {
@@ -439,8 +448,12 @@ Point calculateSlope(){
     return Point(x,y);
 }
 
-void defineTrianglePoints(Point ship, int xSlope, ySlope){
+void defineTrianglePoints(Point ship, int xSlope, int ySlope){
     Point first = ship;
-    Point front = Point(ship.x() + 2*xSlope, ship.y + 2*ySlope
+    Point front = Point(ship.x() + 2*xSlope, ship.y() + 2*ySlope);
+    Point second = Point(front.x() + xSlope, front.y() - ySlope);
+    Point third = Point(front.x() - xSlope, front.y() + ySlope);
+    
+    
     
 }
