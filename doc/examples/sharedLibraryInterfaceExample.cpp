@@ -101,8 +101,8 @@ int main(int argc, char** argv) {
     
     // Get & Set the desired settings
     ale.setInt("random_seed", 123);
-    //The default is already 0.25, this is just an example
-    ale.setFloat("repeat_action_probability", 0.25);
+    //The default is now 0 because we don't want stochasity
+    ale.setFloat("repeat_action_probability", 0);
     
 #ifdef __USE_SDL
     ale.setBool("display_screen", true);
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
     float allRewards = 0;
     
     // Play 10 episodes
-    int episodes = 10
+    int episodes = 10;
     for (int episode=0; episode<espisodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
