@@ -1,4 +1,4 @@
-USE_SDL := 0
+USE_SDL := 1
 
 # This will likely need to be changed to suit your installation.
 ALE := ../..

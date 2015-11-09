@@ -1,17 +1,17 @@
 /* *****************************************************************************
  * A.L.E (Arcade Learning Environment)
  * Copyright (c) 2009-2013 by Yavar Naddaf, Joel Veness, Marc G. Bellemare,
- *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence 
+ *  Matthew Hausknecht, and the Reinforcement Learning and Artificial Intelligence
  *  Laboratory
- * Released under the GNU General Public License; see License.txt for details. 
+ * Released under the GNU General Public License; see License.txt for details.
  *
  * Based on: Stella  --  "An Atari 2600 VCS Emulator"
  * Copyright (c) 1995-2007 by Bradford W. Mott and the Stella team
  *
  * *****************************************************************************
- *  sharedLibraryInterfaceExample.cpp 
+ *  sharedLibraryInterfaceExample.cpp
  *
- *  Sample code for running an agent with the shared library interface. 
+ *  Sample code for running an agent with the shared library interface.
  **************************************************************************** */
 
 #include <string>
@@ -91,17 +91,17 @@ Point lastOne, lastTwo, lastThree, lastFour;
 
 
 Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
-	float bestReward = 0;
-	Action bestAction = av[rand() % av.size()];
-//	for(int i = 0; i < av.size(); i++) {
-//		float reward = ale.act(av[i]);
-//		if(reward > bestReward) {
-//			bestAction = av[i];
-//			bestReward = reward;
-//		}
-//		ale.restoreState(state);
-//	}
-	return bestAction;
+    float bestReward = 0;
+    Action bestAction = av[rand() % av.size()];
+    //	for(int i = 0; i < av.size(); i++) {
+    //		float reward = ale.act(av[i]);
+    //		if(reward > bestReward) {
+    //			bestAction = av[i];
+    //			bestReward = reward;
+    //		}
+    //		ale.restoreState(state);
+    //	}
+    return bestAction;
 }
 
 int main(int argc, char** argv) {
@@ -130,21 +130,27 @@ int main(int argc, char** argv) {
 #endif
     
     
+    /// Uncomment to Record
+    
+//    std::string recordPath = "record";
+//    std::cout << std::endl;
+//    
+//    // Set record flags
+//    ale.setString("record_screen_dir", recordPath.c_str());
+//    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+//    // We set fragsize to 64 to ensure proper sound sync
+//    ale.setInt("fragsize", 64);
+//    
+//    // Not completely portable, but will work in most cases
+//    std::string cmd = "mkdir ";
+//    cmd += recordPath;
+//    system(cmd.c_str());
+
     
     
-    std::string recordPath = "record";
-    std::cout << std::endl;
     
-    // Set record flags
-    ale.setString("record_screen_dir", recordPath.c_str());
-    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
-    // We set fragsize to 64 to ensure proper sound sync
-    ale.setInt("fragsize", 64);
     
-    // Not completely portable, but will work in most cases
-    std::string cmd = "mkdir ";
-    cmd += recordPath;
-    system(cmd.c_str());
+    // Two Turns to make 45 degreesls
     
     
     
@@ -158,24 +164,24 @@ int main(int argc, char** argv) {
     ActionVect minimal_actions = ale.getMinimalActionSet();
     
     // Actions for all minimal actions
-	Action noop = minimal_actions[0];
-	Action shoot = minimal_actions[1];
-	Action thrust = minimal_actions[2];
-	Action turnRight = minimal_actions[3];
-	Action turnLeft = minimal_actions[4];
-	Action shieldTractor = minimal_actions[50];
-	Action thrustRight = minimal_actions[6];
-	Action thrustLeft = minimal_actions[7];
-	Action shieldRight = minimal_actions[8];
-	Action shieldLeft = minimal_actions[9];
-	Action shootThrust = minimal_actions[10];
-	Action shootRight = minimal_actions[11];
-	Action shootLeft = minimal_actions[12];
-	Action shootShield = minimal_actions[13];
-	Action shootThrustRight = minimal_actions[14];
-	Action shootThrustLeft = minimal_actions[15];
-	Action shootShieldRight = minimal_actions[16];
-	Action shootShieldLeft = minimal_actions[17];
+    Action noop = minimal_actions[0];
+    Action shoot = minimal_actions[1];
+    Action thrust = minimal_actions[2];
+    Action turnRight = minimal_actions[3];
+    Action turnLeft = minimal_actions[4];
+    Action shieldTractor = minimal_actions[50];
+    Action thrustRight = minimal_actions[6];
+    Action thrustLeft = minimal_actions[7];
+    Action shieldRight = minimal_actions[8];
+    Action shieldLeft = minimal_actions[9];
+    Action shootThrust = minimal_actions[10];
+    Action shootRight = minimal_actions[11];
+    Action shootLeft = minimal_actions[12];
+    Action shootShield = minimal_actions[13];
+    Action shootThrustRight = minimal_actions[14];
+    Action shootThrustLeft = minimal_actions[15];
+    Action shootShieldRight = minimal_actions[16];
+    Action shootShieldLeft = minimal_actions[17];
     
     // Erase actions that move, but don't fire
     //minimal_actions.erase(minimal_actions.begin() + 2, minimal_actions.begin() + 10);
@@ -185,20 +191,43 @@ int main(int argc, char** argv) {
     
     // Play 10 episodes
     int episodes = 10;
+    int number = 0;
+    int count = 0;
+    int lastLives = ale.lives();
     for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
-            //Point p = centerOfShip(ale.getScreen());
-           // updatePoints(p);
-            //cout << "Lives: " << ale.lives();
-            //printScreen(ale.getScreen());
-            //ALEState curState = ale.cloneState();
-            //Action a = getAction(minimal_actions, curState, ale);
-            Action a = minimal_actions[rand() % minimal_actions.size()];
+            if (ale.lives() < lastLives){
+                lastLives = ale.lives();
+                number = 0;
+                count = 0;
+                cout << " DIE " << endl;
+            }
+//            Point p = centerOfShip(ale.getScreen());
+//             updatePoints(p);
+//            //cout << "Lives: " << ale.lives();
+            printScreen(ale.getScreen());
+//            //ALEState curState = ale.cloneState();
+//            //Action a = getAction(minimal_actions, curState, ale);
+//            Action a;
+//            if(number < 10){
+//                a = noop;
+//                number++;
+//                cout << "NOOP: " << number << " " << to_string(noop) << endl;
+//            } else {
+//                a = turnRight;
+//                number = 0;
+//                count ++;
+//                cout << "Turn " << count << " " << to_string(turnRight) << endl;
+//            }
+//            cout << endl << to_string(a) << endl;
+            //= minimal_actions[rand() % minimal_actions.size()];
             // Apply the action and get the resulting reward
-            float reward = ale.act(a);
+            float reward = ale.act(turnRight);
             totalReward += reward;
         }
+        count = 0;
+        number = 0;
         allRewards += totalReward;
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
@@ -263,96 +292,96 @@ void printScreen(ALEScreen screen){
     calculateSlope().print();
     cout << endl;
     
-    //    for (int y = 31; y < screen.height(); y++) {
-    //        for (int x = 0; x < screen.width(); x++) {
-    //            //cout << "Point: (" << x << ", " << y << ")" << endl;
-    //            string thing = to_string(screen.get(y, x));
-    //            first[thing] += 1;
-    //            if (p.x() == x && p.y() == y) {
-    //                cout << "&";
-    //                continue;
-    //            }
-    //            if (thing == "0"){
-    //                cout << " ";
-    //            } else if (thing == "36"){
-    //                cout << "a";
-    //            } else if (thing == "38"){
-    //                cout << "%";
-    //            } else if (thing == "44"){      // Land on a Planet
-    //                cout << "%";
-    //            } else if (thing == "54"){      // Turret/Bunker
-    //                cout << "I";
-    //            } else if (thing == "52"){
-    //                cout << "*";
-    //            } else if (thing == "56"){
-    //                cout << "R";
-    //            } else if (thing == "60"){
-    //                cout << "T";
-    //            } else if (thing == "66"){
-    //                cout << "Q";
-    //            } else if (thing == "74"){
-    //                cout << "b";
-    //            } else if (thing == "78"){
-    //                cout << "Y";
-    //            } else if (thing == "86"){
-    //                cout << "X";
-    //            } else if (thing == "92"){
-    //                cout << "c";
-    //            } else if (thing == "94"){
-    //                cout << "~";
-    //            } else if (thing == "116"){
-    //                cout << "P";
-    //            } else if (thing == "118"){     // Fuel
-    //                cout << "E";
-    //            } else if (thing == "120"){
-    //                cout << "F";
-    //            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
-    //                cout << "d";
-    //            } else if (thing == "136"){
-    //                cout << "e";
-    //            } else if (thing == "138"){
-    //                cout << "f";
-    //            } else if (thing =="140"){
-    //                cout << "g";
-    //            } else if (thing == "156"){     // Starting Circle
-    //                cout << "h";
-    //            } else if (thing == "166"){
-    //                cout << "S";
-    //            } else if (thing == "170"){     // Ship Doing Nothing
-    //                cout << "|";
-    //            } else if (thing == "175"){     // Ship With Shiled On
-    //                cout << "@";
-    //            } else if (thing == "188"){
-    //                cout << "j";
-    //            } else if (thing == "194"){
-    //                cout << "Z";
-    //            } else if (thing == "196"){
-    //                cout << "]";
-    //            }  else if (thing == "198"){
-    //                cout << "W";
-    //            }  else if (thing == "216"){    // Planet in Left Upper Corner
-    //                cout << "k";
-    //            } else if (thing == "244"){
-    //                cout << "O";
-    //            }  else if (thing == "250"){
-    //                cout << "^";
-    //            } else{
-    //                cout << "U";
-    //            }
-    //            //            os << screen.get(y, x);
-    //            //            string str = os.str(); // str is what you want.
-    //            //            cout << str << " ";
-    //
-    //        }
-    //        cout << endl;
-    //    }
-    //    cout << "================================================" <<endl;
-    //    cout << endl;
-    //
-    //    for(auto elem : first)
-    //    {
-    //        std::cout << elem.first << " " << elem.second << "\n";
-    //    }
+    for (int y = 31; y < screen.height(); y++) {
+        for (int x = 0; x < screen.width(); x++) {
+            //cout << "Point: (" << x << ", " << y << ")" << endl;
+            string thing = to_string(screen.get(y, x));
+            first[thing] += 1;
+            if (p.x() == x && p.y() == y) {
+                cout << "&";
+                continue;
+            }
+            if (thing == "0"){
+                cout << " ";
+            } else if (thing == "36"){
+                cout << "a";
+            } else if (thing == "38"){
+                cout << "%";
+            } else if (thing == "44"){      // Land on a Planet
+                cout << "%";
+            } else if (thing == "54"){      // Turret/Bunker
+                cout << "I";
+            } else if (thing == "52"){
+                cout << "*";
+            } else if (thing == "56"){
+                cout << "R";
+            } else if (thing == "60"){
+                cout << "T";
+            } else if (thing == "66"){
+                cout << "Q";
+            } else if (thing == "74"){
+                cout << "b";
+            } else if (thing == "78"){
+                cout << "Y";
+            } else if (thing == "86"){
+                cout << "X";
+            } else if (thing == "92"){
+                cout << "c";
+            } else if (thing == "94"){
+                cout << "~";
+            } else if (thing == "116"){
+                cout << "P";
+            } else if (thing == "118"){     // Fuel
+                cout << "E";
+            } else if (thing == "120"){
+                cout << "F";
+            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
+                cout << "d";
+            } else if (thing == "136"){
+                cout << "e";
+            } else if (thing == "138"){
+                cout << "f";
+            } else if (thing =="140"){
+                cout << "g";
+            } else if (thing == "156"){     // Starting Circle
+                cout << "h";
+            } else if (thing == "166"){
+                cout << "S";
+            } else if (thing == "170"){     // Ship Doing Nothing
+                cout << "|";
+            } else if (thing == "175"){     // Ship With Shiled On
+                cout << "@";
+            } else if (thing == "188"){
+                cout << "j";
+            } else if (thing == "194"){
+                cout << "Z";
+            } else if (thing == "196"){
+                cout << "]";
+            }  else if (thing == "198"){
+                cout << "W";
+            }  else if (thing == "216"){    // Planet in Left Upper Corner
+                cout << "k";
+            } else if (thing == "244"){
+                cout << "O";
+            }  else if (thing == "250"){
+                cout << "^";
+            } else{
+                cout << "U";
+            }
+            //            os << screen.get(y, x);
+            //            string str = os.str(); // str is what you want.
+            //            cout << str << " ";
+            
+        }
+        cout << endl;
+    }
+    cout << "================================================" <<endl;
+    cout << endl;
+    
+    for(auto elem : first)
+    {
+        std::cout << elem.first << " " << elem.second << "\n";
+    }
 }
 
 Point centerOfShip(ALEScreen screen){
