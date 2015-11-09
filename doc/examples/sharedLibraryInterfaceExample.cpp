@@ -75,6 +75,21 @@
 #endif
 
 using namespace std;
+using namespace ale;
+
+Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
+	float bestReward = 0;
+	Action bestAction = av[rand() % av.size()];
+//	for(int i = 0; i < av.size(); i++) {
+//		float reward = ale.act(av[i]);
+//		if(reward > bestReward) {
+//			bestAction = av[i];
+//			bestReward = reward;
+//		}
+//		ale.restoreState(state);
+//	}
+	return bestAction;
+}
 
 int main(int argc, char** argv) {
     // if (argc < 2) {
@@ -101,18 +116,31 @@ int main(int argc, char** argv) {
     // Get the vector of legal actions
     ActionVect legal_actions = ale.getLegalActionSet();
     
+    // Erase actions that move, but don't fire
+    //minimal_actions.erase(minimal_actions.begin() + 2, minimal_actions.begin() + 10);
+    
+    // Store all rewards earned in all episodes
+    float allRewards = 0;
+    
     // Play 10 episodes
-    for (int episode=0; episode<10; episode++) {
+    int episodes = 10
+    for (int episode=0; episode<espisodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
+            //ALEState curState = ale.cloneState();
+            //Action a = getAction(minimal_actions, curState, ale);
             Action a = legal_actions[rand() % legal_actions.size()];
             // Apply the action and get the resulting reward
             float reward = ale.act(a);
             totalReward += reward;
         }
+        allRewards += totalReward;
         cout << "Episode " << episode << " ended with score: " << totalReward << endl;
         ale.reset_game();
     }
+    
+    // Display average reward per game
+    cout << "Average Reward: " << (allRewards / episodes) << endl;
     
     return 0;
 }
