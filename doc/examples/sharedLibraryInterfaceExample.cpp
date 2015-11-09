@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
 //            Point p = centerOfShip(ale.getScreen());
 //             updatePoints(p);
 //            //cout << "Lives: " << ale.lives();
-            printScreen(ale.getScreen());
+//            printScreen(ale.getScreen());
 //            //ALEState curState = ale.cloneState();
 //            //Action a = getAction(minimal_actions, curState, ale);
 //            Action a;
