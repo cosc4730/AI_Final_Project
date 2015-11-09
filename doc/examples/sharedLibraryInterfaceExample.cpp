@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
     
     // Play 10 episodes
     int episodes = 10;
-    for (int episode=0; episode<espisodes; episode++) {
+    for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
             //ALEState curState = ale.cloneState();
