@@ -167,10 +167,10 @@ int main(int argc, char** argv) {
     for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
-            Point p = centerOfShip(ale.getScreen());
-            updatePoints(p);
+            //Point p = centerOfShip(ale.getScreen());
+           // updatePoints(p);
             //cout << "Lives: " << ale.lives();
-            printScreen(ale.getScreen());
+            //printScreen(ale.getScreen());
             //ALEState curState = ale.cloneState();
             //Action a = getAction(minimal_actions, curState, ale);
             Action a = minimal_actions[rand() % minimal_actions.size()];
