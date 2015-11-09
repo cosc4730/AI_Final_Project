@@ -86,6 +86,7 @@ void printScreen(ALEScreen screen);
 Point centerOfShip(ALEScreen screen);
 void updatePoints(Point p);
 Point calculateSlope();
+void defineTrianglePoints(Point ship, int xSlope, ySlope);
 
 Point lastOne, lastTwo, lastThree, lastFour;
 
@@ -436,4 +437,10 @@ Point calculateSlope(){
         y = lastOne.y() - lastFour.y();
     }
     return Point(x,y);
+}
+
+void defineTrianglePoints(Point ship, int xSlope, ySlope){
+    Point first = ship;
+    Point front = Point(ship.x() + 2*xSlope, ship.y + 2*ySlope
+    
 }
