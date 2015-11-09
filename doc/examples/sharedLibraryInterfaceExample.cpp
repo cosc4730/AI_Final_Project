@@ -129,6 +129,27 @@ int main(int argc, char** argv) {
     ale.setBool("sound", false);
 #endif
     
+    
+    
+    
+    std::string recordPath = "record";
+    std::cout << std::endl;
+    
+    // Set record flags
+    ale.setString("record_screen_dir", recordPath.c_str());
+    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+    // We set fragsize to 64 to ensure proper sound sync
+    ale.setInt("fragsize", 64);
+    
+    // Not completely portable, but will work in most cases
+    std::string cmd = "mkdir ";
+    cmd += recordPath;
+    system(cmd.c_str());
+    
+    
+    
+    
+    
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
     ale.loadROM("gravitar.bin");
