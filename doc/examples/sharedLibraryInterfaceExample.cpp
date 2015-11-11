@@ -20,6 +20,7 @@
 #include <map>
 #include <math.h>
 
+#include <bitset>
 #include <iostream>
 #include <ale_interface.hpp>
 
@@ -86,7 +87,7 @@ void printScreen(ALEScreen screen);
 Point centerOfShip(ALEScreen screen);
 void updatePoints(Point p);
 Point calculateSlope();
-void defineTrianglePoints(Point ship, int xSlope, ySlope);
+void defineTrianglePoints(Point ship, int xSlope, int ySlope);
 
 Point lastOne, lastTwo, lastThree, lastFour;
 
@@ -105,6 +106,77 @@ Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
     return bestAction;
 }
 
+// Stupid Idea
+//char convertToRGB(int number){
+//	bitset<8> bitSet (number);
+//	bitSet = bitSet >> 1;
+//	// Colors are only in the 7 most significant bits;
+//    int amountOfRed = 0;
+//    int amountOfBlue = 0;
+//    int amountOfGreen = 0;
+//    
+//    
+//	if (bitSet[0] == 1){
+//		amountOfBlue += 1;
+//	}
+//	if (bitSet[1] == 1){
+//		amountOfBlue += 1;
+//	}
+//	if (bitSet[2] == 1){
+//		amountOfGreen += 1;
+//	}
+//	if (bitSet[3] == 1){
+//		amountOfGreen += 1;
+//	}
+//	if (bitSet[4] == 1){
+//		amountOfRed += 1;
+//	}
+//	if (bitSet[5] == 1){
+//		amountOfRed += 1;
+//	}
+//	if (bitSet[6] == 1){
+//		amountOfRed += 1;
+//	}
+//    
+//   // cout << number << " " << bitSet << " " << "RGB " << amountOfRed << " " << amountOfGreen << " " << amountOfBlue << endl;
+//   // return ' ';
+//
+//	if (amountOfRed == 0 && amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
+//		return ' ';
+//	} else if (amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
+//		return 'W';
+//    } else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue == 0){
+//        return 'R';
+//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue == 0){
+//        return 'G';
+//    }else if (amountOfRed == 0 && amountOfGreen == 0 && amountOfBlue != 0){
+//        return 'B';
+//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue == 0){
+//        return 'Y';
+//    }else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue != 0){
+//        return 'P';
+//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue != 0){
+//        return 'C';
+//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue != 0){
+//        if (amountOfRed > amountOfGreen) {
+//            if (amountOfBlue > amountOfRed) {
+//                return 'b';
+//            } else{
+//                return 'r';
+//            }
+//        } else{
+//            if (amountOfBlue > amountOfGreen) {
+//                return 'b';
+//            } else{
+//                return 'g';
+//            }
+//        }
+//    }else{
+//        return 'U';
+//    }
+//
+//}
+//
 int main(int argc, char** argv) {
     // if (argc < 2) {
     //     std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
@@ -207,7 +279,7 @@ int main(int argc, char** argv) {
 //            Point p = centerOfShip(ale.getScreen());
 //             updatePoints(p);
 //            //cout << "Lives: " << ale.lives();
-//            printScreen(ale.getScreen());
+            printScreen(ale.getScreen());
 //            //ALEState curState = ale.cloneState();
 //            //Action a = getAction(minimal_actions, curState, ale);
 //            Action a;
@@ -302,73 +374,74 @@ void printScreen(ALEScreen screen){
                 cout << "&";
                 continue;
             }
-            if (thing == "0"){
-                cout << " ";
-            } else if (thing == "36"){
-                cout << "a";
-            } else if (thing == "38"){
-                cout << "%";
-            } else if (thing == "44"){      // Land on a Planet
-                cout << "%";
-            } else if (thing == "54"){      // Turret/Bunker
-                cout << "I";
-            } else if (thing == "52"){
-                cout << "*";
-            } else if (thing == "56"){
-                cout << "R";
-            } else if (thing == "60"){
-                cout << "T";
-            } else if (thing == "66"){
-                cout << "Q";
-            } else if (thing == "74"){
-                cout << "b";
-            } else if (thing == "78"){
-                cout << "Y";
-            } else if (thing == "86"){
-                cout << "X";
-            } else if (thing == "92"){
-                cout << "c";
-            } else if (thing == "94"){
-                cout << "~";
-            } else if (thing == "116"){
-                cout << "P";
-            } else if (thing == "118"){     // Fuel
-                cout << "E";
-            } else if (thing == "120"){
-                cout << "F";
-            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
-                cout << "d";
-            } else if (thing == "136"){
-                cout << "e";
-            } else if (thing == "138"){
-                cout << "f";
-            } else if (thing =="140"){
-                cout << "g";
-            } else if (thing == "156"){     // Starting Circle
-                cout << "h";
-            } else if (thing == "166"){
-                cout << "S";
-            } else if (thing == "170"){     // Ship Doing Nothing
-                cout << "|";
-            } else if (thing == "175"){     // Ship With Shiled On
-                cout << "@";
-            } else if (thing == "188"){
-                cout << "j";
-            } else if (thing == "194"){
-                cout << "Z";
-            } else if (thing == "196"){
-                cout << "]";
-            }  else if (thing == "198"){
-                cout << "W";
-            }  else if (thing == "216"){    // Planet in Left Upper Corner
-                cout << "k";
-            } else if (thing == "244"){
-                cout << "O";
-            }  else if (thing == "250"){
-                cout << "^";
-            } else{
-                cout << "U";
-            }
+            cout << convertToRGB(int(screen.get(y, x)));
+            // if (thing == "0"){
+            //     cout << " ";
+            // } else if (thing == "36"){
+            //     cout << "a";
+            // } else if (thing == "38"){
+            //     cout << "%";
+            // } else if (thing == "44"){      // Land on a Planet
+            //     cout << "%";
+            // } else if (thing == "54"){      // Turret/Bunker
+            //     cout << "I";
+            // } else if (thing == "52"){
+            //     cout << "*";
+            // } else if (thing == "56"){
+            //     cout << "R";
+            // } else if (thing == "60"){
+            //     cout << "T";
+            // } else if (thing == "66"){
+            //     cout << "Q";
+            // } else if (thing == "74"){
+            //     cout << "b";
+            // } else if (thing == "78"){
+            //     cout << "Y";
+            // } else if (thing == "86"){
+            //     cout << "X";
+            // } else if (thing == "92"){
+            //     cout << "c";
+            // } else if (thing == "94"){
+            //     cout << "~";
+            // } else if (thing == "116"){
+            //     cout << "P";
+            // } else if (thing == "118"){     // Fuel
+            //     cout << "E";
+            // } else if (thing == "120"){
+            //     cout << "F";
+            // } else if (thing == "122"){     // Planet in Upper Left Hand Corner
+            //     cout << "d";
+            // } else if (thing == "136"){
+            //     cout << "e";
+            // } else if (thing == "138"){
+            //     cout << "f";
+            // } else if (thing =="140"){
+            //     cout << "g";
+            // } else if (thing == "156"){     // Starting Circle
+            //     cout << "h";
+            // } else if (thing == "166"){
+            //     cout << "S";
+            // } else if (thing == "170"){     // Ship Doing Nothing
+            //     cout << "|";
+            // } else if (thing == "175"){     // Ship With Shiled On
+            //     cout << "@";
+            // } else if (thing == "188"){
+            //     cout << "j";
+            // } else if (thing == "194"){
+            //     cout << "Z";
+            // } else if (thing == "196"){
+            //     cout << "]";
+            // }  else if (thing == "198"){
+            //     cout << "W";
+            // }  else if (thing == "216"){    // Planet in Left Upper Corner
+            //     cout << "k";
+            // } else if (thing == "244"){
+            //     cout << "O";
+            // }  else if (thing == "250"){
+            //     cout << "^";
+            // } else{
+            //     cout << "U";
+            // }
             //            os << screen.get(y, x);
             //            string str = os.str(); // str is what you want.
             //            cout << str << " ";
@@ -386,11 +459,11 @@ void printScreen(ALEScreen screen){
 }
 
 bool isOtherIntTriangle(Point one, Point two, Point three, ALEScreen screen){
-    int x = one.x();
-    int y = one.y();
-    while (x < ) {
-        <#statements#>
-    }
+//    int x = one.x();
+//    int y = one.y();
+//    while (x < ) {
+//        <#statements#>
+//    }
     return true;
 }
 
