@@ -20,6 +20,7 @@
 #include <map>
 #include <math.h>
 
+#include <vector>
 #include <bitset>
 #include <iostream>
 #include <ale_interface.hpp>
@@ -88,8 +89,10 @@ Point centerOfShip(ALEScreen screen);
 void updatePoints(Point p);
 Point calculateSlope();
 void defineTrianglePoints(Point ship, int xSlope, int ySlope);
-
+bool isPointInsideTriangle(Point p, Point one, Point two, Point three);
+int nearShip(vector<string> listInts, ALEScreen screen);
 Point lastOne, lastTwo, lastThree, lastFour;
+Point triangleOne, triangleTwo, triangleThree;
 
 
 Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
@@ -114,8 +117,8 @@ Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
 //    int amountOfRed = 0;
 //    int amountOfBlue = 0;
 //    int amountOfGreen = 0;
-//    
-//    
+//
+//
 //	if (bitSet[0] == 1){
 //		amountOfBlue += 1;
 //	}
@@ -137,7 +140,7 @@ Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
 //	if (bitSet[6] == 1){
 //		amountOfRed += 1;
 //	}
-//    
+//
 //   // cout << number << " " << bitSet << " " << "RGB " << amountOfRed << " " << amountOfGreen << " " << amountOfBlue << endl;
 //   // return ' ';
 //
@@ -205,20 +208,20 @@ int main(int argc, char** argv) {
     
     /// Uncomment to Record
     
-//    std::string recordPath = "record";
-//    std::cout << std::endl;
-//    
-//    // Set record flags
-//    ale.setString("record_screen_dir", recordPath.c_str());
-//    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
-//    // We set fragsize to 64 to ensure proper sound sync
-//    ale.setInt("fragsize", 64);
-//    
-//    // Not completely portable, but will work in most cases
-//    std::string cmd = "mkdir ";
-//    cmd += recordPath;
-//    system(cmd.c_str());
-
+    //    std::string recordPath = "record";
+    //    std::cout << std::endl;
+    //
+    //    // Set record flags
+    //    ale.setString("record_screen_dir", recordPath.c_str());
+    //    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+    //    // We set fragsize to 64 to ensure proper sound sync
+    //    ale.setInt("fragsize", 64);
+    //
+    //    // Not completely portable, but will work in most cases
+    //    std::string cmd = "mkdir ";
+    //    cmd += recordPath;
+    //    system(cmd.c_str());
+    
     
     
     
@@ -267,6 +270,11 @@ int main(int argc, char** argv) {
     int number = 0;
     int count = 0;
     int lastLives = ale.lives();
+    
+    vector<string> badPoints;
+    badPoints.push_back("244");
+    badPoints.push_back("94");
+    badPoints.push_back("44");
     for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
@@ -276,27 +284,32 @@ int main(int argc, char** argv) {
                 count = 0;
                 cout << " DIE " << endl;
             }
-//            Point p = centerOfShip(ale.getScreen());
-//             updatePoints(p);
-//            //cout << "Lives: " << ale.lives();
-            printScreen(ale.getScreen());
-//            //ALEState curState = ale.cloneState();
-//            //Action a = getAction(minimal_actions, curState, ale);
-//            Action a;
-//            if(number < 10){
-//                a = noop;
-//                number++;
-//                cout << "NOOP: " << number << " " << to_string(noop) << endl;
-//            } else {
-//                a = turnRight;
-//                number = 0;
-//                count ++;
-//                cout << "Turn " << count << " " << to_string(turnRight) << endl;
-//            }
-//            cout << endl << to_string(a) << endl;
-            //= minimal_actions[rand() % minimal_actions.size()];
+            Point slope = calculateSlope();
+            Point ship = centerOfShip(ale.getScreen());
+            updatePoints(ship);
+            defineTrianglePoints(ship, slope.x(), slope.y());
+            nearShip(badPoints, ale.getScreen());
+            //            Point p = centerOfShip(ale.getScreen());
+            //             updatePoints(p);
+            //            //cout << "Lives: " << ale.lives();
+            //printScreen(ale.getScreen());
+            //            //ALEState curState = ale.cloneState();
+            //            //Action a = getAction(minimal_actions, curState, ale);
+            //            Action a;
+            //            if(number < 10){
+            //                a = noop;
+            //                number++;
+            //                cout << "NOOP: " << number << " " << to_string(noop) << endl;
+            //            } else {
+            //                a = turnRight;
+            //                number = 0;
+            //                count ++;
+            //                cout << "Turn " << count << " " << to_string(turnRight) << endl;
+            //            }
+            //            cout << endl << to_string(a) << endl;
+            Action action = minimal_actions[rand() % minimal_actions.size()];
             // Apply the action and get the resulting reward
-            float reward = ale.act(turnRight);
+            float reward = ale.act(action);
             totalReward += reward;
         }
         count = 0;
@@ -362,9 +375,10 @@ void printScreen(ALEScreen screen){
     p.print();
     cout << endl;
     cout << "Slope: ";
-    calculateSlope().print();
+    Point slope = calculateSlope();
+    slope.print();
     cout << endl;
-    
+    defineTrianglePoints(p, slope.x(), slope.y());
     for (int y = 31; y < screen.height(); y++) {
         for (int x = 0; x < screen.width(); x++) {
             //cout << "Point: (" << x << ", " << y << ")" << endl;
@@ -374,77 +388,85 @@ void printScreen(ALEScreen screen){
                 cout << "&";
                 continue;
             }
-            cout << convertToRGB(int(screen.get(y, x)));
-            // if (thing == "0"){
-            //     cout << " ";
-            // } else if (thing == "36"){
-            //     cout << "a";
-            // } else if (thing == "38"){
-            //     cout << "%";
-            // } else if (thing == "44"){      // Land on a Planet
-            //     cout << "%";
-            // } else if (thing == "54"){      // Turret/Bunker
-            //     cout << "I";
-            // } else if (thing == "52"){
-            //     cout << "*";
-            // } else if (thing == "56"){
-            //     cout << "R";
-            // } else if (thing == "60"){
-            //     cout << "T";
-            // } else if (thing == "66"){
-            //     cout << "Q";
-            // } else if (thing == "74"){
-            //     cout << "b";
-            // } else if (thing == "78"){
-            //     cout << "Y";
-            // } else if (thing == "86"){
-            //     cout << "X";
-            // } else if (thing == "92"){
-            //     cout << "c";
-            // } else if (thing == "94"){
-            //     cout << "~";
-            // } else if (thing == "116"){
-            //     cout << "P";
-            // } else if (thing == "118"){     // Fuel
-            //     cout << "E";
-            // } else if (thing == "120"){
-            //     cout << "F";
-            // } else if (thing == "122"){     // Planet in Upper Left Hand Corner
-            //     cout << "d";
-            // } else if (thing == "136"){
-            //     cout << "e";
-            // } else if (thing == "138"){
-            //     cout << "f";
-            // } else if (thing =="140"){
-            //     cout << "g";
-            // } else if (thing == "156"){     // Starting Circle
-            //     cout << "h";
-            // } else if (thing == "166"){
-            //     cout << "S";
-            // } else if (thing == "170"){     // Ship Doing Nothing
-            //     cout << "|";
-            // } else if (thing == "175"){     // Ship With Shiled On
-            //     cout << "@";
-            // } else if (thing == "188"){
-            //     cout << "j";
-            // } else if (thing == "194"){
-            //     cout << "Z";
-            // } else if (thing == "196"){
-            //     cout << "]";
-            // }  else if (thing == "198"){
-            //     cout << "W";
-            // }  else if (thing == "216"){    // Planet in Left Upper Corner
-            //     cout << "k";
-            // } else if (thing == "244"){
-            //     cout << "O";
-            // }  else if (thing == "250"){
-            //     cout << "^";
-            // } else{
-            //     cout << "U";
-            // }
-            //            os << screen.get(y, x);
-            //            string str = os.str(); // str is what you want.
-            //            cout << str << " ";
+            if (triangleOne.x() == x && triangleOne.y() == y) {
+                cout << "$";
+            }
+            if (triangleTwo.x() == x && triangleTwo.y() == y) {
+                cout << "$";
+            }
+            if (triangleThree.x() == x && triangleThree.y() == y) {
+                cout << "$";
+            }
+            if (thing == "0"){
+                cout << " ";
+            } else if (thing == "36"){
+                cout << "a";
+            } else if (thing == "38"){
+                cout << "%";
+            } else if (thing == "44"){      // Land on a Planet
+                cout << "%";
+            } else if (thing == "54"){      // Turret/Bunker
+                cout << "I";
+            } else if (thing == "52"){
+                cout << "*";
+            } else if (thing == "56"){
+                cout << "R";
+            } else if (thing == "60"){
+                cout << "T";
+            } else if (thing == "66"){
+                cout << "Q";
+            } else if (thing == "74"){
+                cout << "b";
+            } else if (thing == "78"){
+                cout << "Y";
+            } else if (thing == "86"){
+                cout << "X";
+            } else if (thing == "92"){
+                cout << "c";
+            } else if (thing == "94"){
+                cout << "~";
+            } else if (thing == "116"){
+                cout << "P";
+            } else if (thing == "118"){     // Fuel
+                cout << "E";
+            } else if (thing == "120"){
+                cout << "F";
+            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
+                cout << "d";
+            } else if (thing == "136"){
+                cout << "e";
+            } else if (thing == "138"){
+                cout << "f";
+            } else if (thing =="140"){
+                cout << "g";
+            } else if (thing == "156"){     // Starting Circle
+                cout << "h";
+            } else if (thing == "166"){
+                cout << "S";
+            } else if (thing == "170"){     // Ship Doing Nothing
+                cout << "|";
+            } else if (thing == "175"){     // Ship With Shiled On
+                cout << "@";
+            } else if (thing == "188"){
+                cout << "j";
+            } else if (thing == "194"){
+                cout << "Z";
+            } else if (thing == "196"){
+                cout << "]";
+            }  else if (thing == "198"){
+                cout << "W";
+            }  else if (thing == "216"){    // Planet in Left Upper Corner
+                cout << "k";
+            } else if (thing == "244"){
+                cout << "O";
+            }  else if (thing == "250"){
+                cout << "^";
+            } else{
+                cout << "U";
+            }
+            os << screen.get(y, x);
+            string str = os.str(); // str is what you want.
+            cout << str << " ";
             
         }
         cout << endl;
@@ -458,13 +480,46 @@ void printScreen(ALEScreen screen){
     }
 }
 
-bool isOtherIntTriangle(Point one, Point two, Point three, ALEScreen screen){
-//    int x = one.x();
-//    int y = one.y();
-//    while (x < ) {
-//        <#statements#>
-//    }
-    return true;
+float sign(Point one, Point two, Point three){
+    return (one.x() - three.x()) * (two.y() -three.y()) - (two.x() - three.x()) * (one.y() - three.y());
+}
+bool isPointInsideTriangle(Point p, Point one, Point two, Point three){
+    bool b1 = sign(p, one, two) < 0.0;
+    bool b2 = sign(p,two, three) < 0.0;
+    bool b3 = sign(p, three, one) < 0.0;
+    
+    return ((b1 == b2) && (b2==b3));
+}
+
+int nearShip(vector<string> listInts, ALEScreen screen){
+    if (triangleOne.x() == triangleTwo.x() && triangleTwo.x() == triangleThree.x()) {
+        if (triangleOne.y() == triangleTwo.y() && triangleTwo.y() == triangleThree.y()){
+            return 0;
+        }
+    }
+    int Count = 0;
+    for (int y = 31; y < screen.height(); y++) {
+        for (int x = 0; x < screen.width(); x++) {
+            string thing = to_string(screen.get(y, x));
+            if (find(listInts.begin(), listInts.end(), thing) != listInts.end()) {
+                Point p = Point(x, y);
+                if (isPointInsideTriangle(p, triangleOne, triangleTwo, triangleThree)) {
+                    Count++;
+
+                }
+            }
+        }
+    }
+    if (Count > 1) {
+        cout << "Might Die " << Count << " P1: ";
+        triangleOne.print();
+        cout << " P2: ";
+        triangleTwo.print();
+        cout << " P3: ";
+        triangleThree.print();
+        cout << endl;
+    }
+    return Count;
 }
 
 Point centerOfShip(ALEScreen screen){
@@ -527,6 +582,7 @@ void defineTrianglePoints(Point ship, int xSlope, int ySlope){
     Point second = Point(front.x() + xSlope, front.y() - ySlope);
     Point third = Point(front.x() - xSlope, front.y() + ySlope);
     
-    
-    
+    triangleOne = front;
+    triangleTwo = second;
+    triangleThree = third;
 }
