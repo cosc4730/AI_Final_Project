@@ -1,0 +1,103 @@
+// Random file for Stuff
+
+
+            Point slope = calculateSlope();
+            Point ship = centerOfShip(ale.getScreen());
+            updatePoints(ship);
+            defineTrianglePoints(ship, slope.x(), slope.y());
+            nearShip(badPoints, ale.getScreen());
+            //            Point p = centerOfShip(ale.getScreen());
+            //             updatePoints(p);
+            //            //cout << "Lives: " << ale.lives();
+            //printScreen(ale.getScreen());
+            //            //ALEState curState = ale.cloneState();
+            //            //Action a = getAction(minimal_actions, curState, ale);
+            //            Action a;
+            //            if(number < 10){
+            //                a = noop;
+            //                number++;
+            //                cout << "NOOP: " << number << " " << to_string(noop) << endl;
+            //            } else {
+            //                a = turnRight;
+            //                number = 0;
+            //                count ++;
+            //                cout << "Turn " << count << " " << to_string(turnRight) << endl;
+            //            }
+            //            cout << endl << to_string(a) << endl;
+            Action action = minimal_actions[rand() % minimal_actions.size()];
+
+
+
+
+
+// Stupid Idea
+//char convertToRGB(int number){
+//	bitset<8> bitSet (number);
+//	bitSet = bitSet >> 1;
+//	// Colors are only in the 7 most significant bits;
+//    int amountOfRed = 0;
+//    int amountOfBlue = 0;
+//    int amountOfGreen = 0;
+//
+//
+//	if (bitSet[0] == 1){
+//		amountOfBlue += 1;
+//	}
+//	if (bitSet[1] == 1){
+//		amountOfBlue += 1;
+//	}
+//	if (bitSet[2] == 1){
+//		amountOfGreen += 1;
+//	}
+//	if (bitSet[3] == 1){
+//		amountOfGreen += 1;
+//	}
+//	if (bitSet[4] == 1){
+//		amountOfRed += 1;
+//	}
+//	if (bitSet[5] == 1){
+//		amountOfRed += 1;
+//	}
+//	if (bitSet[6] == 1){
+//		amountOfRed += 1;
+//	}
+//
+//   // cout << number << " " << bitSet << " " << "RGB " << amountOfRed << " " << amountOfGreen << " " << amountOfBlue << endl;
+//   // return ' ';
+//
+//	if (amountOfRed == 0 && amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
+//		return ' ';
+//	} else if (amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
+//		return 'W';
+//    } else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue == 0){
+//        return 'R';
+//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue == 0){
+//        return 'G';
+//    }else if (amountOfRed == 0 && amountOfGreen == 0 && amountOfBlue != 0){
+//        return 'B';
+//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue == 0){
+//        return 'Y';
+//    }else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue != 0){
+//        return 'P';
+//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue != 0){
+//        return 'C';
+//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue != 0){
+//        if (amountOfRed > amountOfGreen) {
+//            if (amountOfBlue > amountOfRed) {
+//                return 'b';
+//            } else{
+//                return 'r';
+//            }
+//        } else{
+//            if (amountOfBlue > amountOfGreen) {
+//                return 'b';
+//            } else{
+//                return 'g';
+//            }
+//        }
+//    }else{
+//        return 'U';
+//    }
+//
+//}
+//

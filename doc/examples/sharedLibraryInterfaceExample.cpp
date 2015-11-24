@@ -16,7 +16,6 @@
 
 #include <string>
 #include <iostream>
-#include <sstream>
 #include <map>
 #include <math.h>
 
@@ -25,74 +24,15 @@
 #include <iostream>
 #include <ale_interface.hpp>
 
+#include "Point.h"
+#include "Decision.h"
+
 #ifdef __USE_SDL
 #include <SDL.h>
 #endif
 
 using namespace std;
 using namespace ale;
-
-
-class Point {
-private:
-    int xval, yval;
-public:
-    // Constructor uses default arguments to allow calling with zero, one,
-    // or two values.
-    Point(int x = -1, int y = -1) {
-        xval = x;
-        yval = y;
-    }
-    
-    // Extractors.
-    int x() { return xval; }
-    int y() { return yval; }
-    
-    // Distance to another point.  Pythagorean thm.
-    int dist(Point other) {
-        int xd = xval - other.xval;
-        int yd = yval - other.yval;
-        return sqrt(xd*xd + yd*yd);
-    }
-    
-    // Add or subtract two points.
-    Point add(Point b)
-    {
-        return Point(xval + b.xval, yval + b.yval);
-    }
-    Point sub(Point b)
-    {
-        return Point(xval - b.xval, yval - b.yval);
-    }
-    
-    // Move the existing point.
-    void move(int a, int b)
-    {
-        xval += a;
-        yval += b;
-    }
-    
-    // Print the point on the stream.  The class ostream is a base class
-    // for output streams of various types.
-    void print()
-    {
-        cout << "(" << xval << "," << yval << ")";
-    }
-};
-
-
-
-
-
-void printScreen(ALEScreen screen);
-Point centerOfShip(ALEScreen screen);
-void updatePoints(Point p);
-Point calculateSlope();
-void defineTrianglePoints(Point ship, int xSlope, int ySlope);
-bool isPointInsideTriangle(Point p, Point one, Point two, Point three);
-int nearShip(vector<string> listInts, ALEScreen screen);
-Point lastOne, lastTwo, lastThree, lastFour;
-Point triangleOne, triangleTwo, triangleThree;
 
 
 Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
@@ -109,91 +49,9 @@ Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
     return bestAction;
 }
 
-// Stupid Idea
-//char convertToRGB(int number){
-//	bitset<8> bitSet (number);
-//	bitSet = bitSet >> 1;
-//	// Colors are only in the 7 most significant bits;
-//    int amountOfRed = 0;
-//    int amountOfBlue = 0;
-//    int amountOfGreen = 0;
-//
-//
-//	if (bitSet[0] == 1){
-//		amountOfBlue += 1;
-//	}
-//	if (bitSet[1] == 1){
-//		amountOfBlue += 1;
-//	}
-//	if (bitSet[2] == 1){
-//		amountOfGreen += 1;
-//	}
-//	if (bitSet[3] == 1){
-//		amountOfGreen += 1;
-//	}
-//	if (bitSet[4] == 1){
-//		amountOfRed += 1;
-//	}
-//	if (bitSet[5] == 1){
-//		amountOfRed += 1;
-//	}
-//	if (bitSet[6] == 1){
-//		amountOfRed += 1;
-//	}
-//
-//   // cout << number << " " << bitSet << " " << "RGB " << amountOfRed << " " << amountOfGreen << " " << amountOfBlue << endl;
-//   // return ' ';
-//
-//	if (amountOfRed == 0 && amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
-//		return ' ';
-//	} else if (amountOfRed == amountOfGreen && amountOfGreen == amountOfBlue){
-//		return 'W';
-//    } else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue == 0){
-//        return 'R';
-//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue == 0){
-//        return 'G';
-//    }else if (amountOfRed == 0 && amountOfGreen == 0 && amountOfBlue != 0){
-//        return 'B';
-//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue == 0){
-//        return 'Y';
-//    }else if (amountOfRed != 0 && amountOfGreen == 0 && amountOfBlue != 0){
-//        return 'P';
-//    }else if (amountOfRed == 0 && amountOfGreen != 0 && amountOfBlue != 0){
-//        return 'C';
-//    }else if (amountOfRed != 0 && amountOfGreen != 0 && amountOfBlue != 0){
-//        if (amountOfRed > amountOfGreen) {
-//            if (amountOfBlue > amountOfRed) {
-//                return 'b';
-//            } else{
-//                return 'r';
-//            }
-//        } else{
-//            if (amountOfBlue > amountOfGreen) {
-//                return 'b';
-//            } else{
-//                return 'g';
-//            }
-//        }
-//    }else{
-//        return 'U';
-//    }
-//
-//}
-//
+
 int main(int argc, char** argv) {
-    // if (argc < 2) {
-    //     std::cerr << "Usage: " << argv[0] << " rom_file" << std::endl;
-    //     return 1;
-    // }
-    
     ALEInterface ale;
-    
-    
-    lastOne = Point();
-    lastTwo = Point();
-    lastThree = Point();
-    lastFour = Point();
-    
     
     // Get & Set the desired settings
     ale.setInt("random_seed", 123);
@@ -205,9 +63,7 @@ int main(int argc, char** argv) {
     ale.setBool("sound", false);
 #endif
     
-    
     /// Uncomment to Record
-    
     //    std::string recordPath = "record";
     //    std::cout << std::endl;
     //
@@ -223,42 +79,13 @@ int main(int argc, char** argv) {
     //    system(cmd.c_str());
     
     
-    
-    
-    
-    // Two Turns to make 45 degreesls
-    
-    
-    
-    
-    
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
     ale.loadROM("gravitar.bin");
     
     // Get the vector of minimal actions
-    ActionVect minimal_actions = ale.getMinimalActionSet();
-    
-    // Actions for all minimal actions
-    Action noop = minimal_actions[0];
-    Action shoot = minimal_actions[1];
-    Action thrust = minimal_actions[2];
-    Action turnRight = minimal_actions[3];
-    Action turnLeft = minimal_actions[4];
-    Action shieldTractor = minimal_actions[50];
-    Action thrustRight = minimal_actions[6];
-    Action thrustLeft = minimal_actions[7];
-    Action shieldRight = minimal_actions[8];
-    Action shieldLeft = minimal_actions[9];
-    Action shootThrust = minimal_actions[10];
-    Action shootRight = minimal_actions[11];
-    Action shootLeft = minimal_actions[12];
-    Action shootShield = minimal_actions[13];
-    Action shootThrustRight = minimal_actions[14];
-    Action shootThrustLeft = minimal_actions[15];
-    Action shootShieldRight = minimal_actions[16];
-    Action shootShieldLeft = minimal_actions[17];
-    
+    const ActionVect minimal_actions = ale.getMinimalActionSet();
+     
     // Erase actions that move, but don't fire
     //minimal_actions.erase(minimal_actions.begin() + 2, minimal_actions.begin() + 10);
     
@@ -270,11 +97,10 @@ int main(int argc, char** argv) {
     int number = 0;
     int count = 0;
     int lastLives = ale.lives();
-    
-    vector<string> badPoints;
-    badPoints.push_back("244");
-    badPoints.push_back("94");
-    badPoints.push_back("44");
+
+    Decision decision = Decision(ale.getMinimalActionSet(), ale.getScreen());
+        
+
     for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
         while (!ale.game_over()) {
@@ -284,32 +110,9 @@ int main(int argc, char** argv) {
                 count = 0;
                 cout << " DIE " << endl;
             }
-            Point slope = calculateSlope();
-            Point ship = centerOfShip(ale.getScreen());
-            updatePoints(ship);
-            defineTrianglePoints(ship, slope.x(), slope.y());
-            nearShip(badPoints, ale.getScreen());
-            //            Point p = centerOfShip(ale.getScreen());
-            //             updatePoints(p);
-            //            //cout << "Lives: " << ale.lives();
-            //printScreen(ale.getScreen());
-            //            //ALEState curState = ale.cloneState();
-            //            //Action a = getAction(minimal_actions, curState, ale);
-            //            Action a;
-            //            if(number < 10){
-            //                a = noop;
-            //                number++;
-            //                cout << "NOOP: " << number << " " << to_string(noop) << endl;
-            //            } else {
-            //                a = turnRight;
-            //                number = 0;
-            //                count ++;
-            //                cout << "Turn " << count << " " << to_string(turnRight) << endl;
-            //            }
-            //            cout << endl << to_string(a) << endl;
-            Action action = minimal_actions[rand() % minimal_actions.size()];
+
             // Apply the action and get the resulting reward
-            float reward = ale.act(action);
+            float reward = ale.act(decision.getDecision(ale.getScreen(), ale.lives()));
             totalReward += reward;
         }
         count = 0;
@@ -362,227 +165,3 @@ int main(int argc, char** argv) {
 
 // 5 + 7 + 5 + 7 +
 // 7
-
-void printScreen(ALEScreen screen){
-    cout << endl;
-    cout << "================================================" <<endl;
-    map<string, int> first;
-    //cout << screen << endl;
-    ostringstream os;
-    cout << "Size: (" << screen.width() << ", " << screen.height() << ")" << endl;
-    cout << "Ship: ";
-    Point p = centerOfShip(screen);
-    p.print();
-    cout << endl;
-    cout << "Slope: ";
-    Point slope = calculateSlope();
-    slope.print();
-    cout << endl;
-    defineTrianglePoints(p, slope.x(), slope.y());
-    for (int y = 31; y < screen.height(); y++) {
-        for (int x = 0; x < screen.width(); x++) {
-            //cout << "Point: (" << x << ", " << y << ")" << endl;
-            string thing = to_string(screen.get(y, x));
-            first[thing] += 1;
-            if (p.x() == x && p.y() == y) {
-                cout << "&";
-                continue;
-            }
-            if (triangleOne.x() == x && triangleOne.y() == y) {
-                cout << "$";
-            }
-            if (triangleTwo.x() == x && triangleTwo.y() == y) {
-                cout << "$";
-            }
-            if (triangleThree.x() == x && triangleThree.y() == y) {
-                cout << "$";
-            }
-            if (thing == "0"){
-                cout << " ";
-            } else if (thing == "36"){
-                cout << "a";
-            } else if (thing == "38"){
-                cout << "%";
-            } else if (thing == "44"){      // Land on a Planet
-                cout << "%";
-            } else if (thing == "54"){      // Turret/Bunker
-                cout << "I";
-            } else if (thing == "52"){
-                cout << "*";
-            } else if (thing == "56"){
-                cout << "R";
-            } else if (thing == "60"){
-                cout << "T";
-            } else if (thing == "66"){
-                cout << "Q";
-            } else if (thing == "74"){
-                cout << "b";
-            } else if (thing == "78"){
-                cout << "Y";
-            } else if (thing == "86"){
-                cout << "X";
-            } else if (thing == "92"){
-                cout << "c";
-            } else if (thing == "94"){
-                cout << "~";
-            } else if (thing == "116"){
-                cout << "P";
-            } else if (thing == "118"){     // Fuel
-                cout << "E";
-            } else if (thing == "120"){
-                cout << "F";
-            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
-                cout << "d";
-            } else if (thing == "136"){
-                cout << "e";
-            } else if (thing == "138"){
-                cout << "f";
-            } else if (thing =="140"){
-                cout << "g";
-            } else if (thing == "156"){     // Starting Circle
-                cout << "h";
-            } else if (thing == "166"){
-                cout << "S";
-            } else if (thing == "170"){     // Ship Doing Nothing
-                cout << "|";
-            } else if (thing == "175"){     // Ship With Shiled On
-                cout << "@";
-            } else if (thing == "188"){
-                cout << "j";
-            } else if (thing == "194"){
-                cout << "Z";
-            } else if (thing == "196"){
-                cout << "]";
-            }  else if (thing == "198"){
-                cout << "W";
-            }  else if (thing == "216"){    // Planet in Left Upper Corner
-                cout << "k";
-            } else if (thing == "244"){
-                cout << "O";
-            }  else if (thing == "250"){
-                cout << "^";
-            } else{
-                cout << "U";
-            }
-            os << screen.get(y, x);
-            string str = os.str(); // str is what you want.
-            cout << str << " ";
-            
-        }
-        cout << endl;
-    }
-    cout << "================================================" <<endl;
-    cout << endl;
-    
-    for(auto elem : first)
-    {
-        std::cout << elem.first << " " << elem.second << "\n";
-    }
-}
-
-float sign(Point one, Point two, Point three){
-    return (one.x() - three.x()) * (two.y() -three.y()) - (two.x() - three.x()) * (one.y() - three.y());
-}
-bool isPointInsideTriangle(Point p, Point one, Point two, Point three){
-    bool b1 = sign(p, one, two) < 0.0;
-    bool b2 = sign(p,two, three) < 0.0;
-    bool b3 = sign(p, three, one) < 0.0;
-    
-    return ((b1 == b2) && (b2==b3));
-}
-
-int nearShip(vector<string> listInts, ALEScreen screen){
-    if (triangleOne.x() == triangleTwo.x() && triangleTwo.x() == triangleThree.x()) {
-        if (triangleOne.y() == triangleTwo.y() && triangleTwo.y() == triangleThree.y()){
-            return 0;
-        }
-    }
-    int Count = 0;
-    for (int y = 31; y < screen.height(); y++) {
-        for (int x = 0; x < screen.width(); x++) {
-            string thing = to_string(screen.get(y, x));
-            if (find(listInts.begin(), listInts.end(), thing) != listInts.end()) {
-                Point p = Point(x, y);
-                if (isPointInsideTriangle(p, triangleOne, triangleTwo, triangleThree)) {
-                    Count++;
-
-                }
-            }
-        }
-    }
-    if (Count > 1) {
-        cout << "Might Die " << Count << " P1: ";
-        triangleOne.print();
-        cout << " P2: ";
-        triangleTwo.print();
-        cout << " P3: ";
-        triangleThree.print();
-        cout << endl;
-    }
-    return Count;
-}
-
-Point centerOfShip(ALEScreen screen){
-    int count = 0;
-    for (int y = 31; y < screen.height(); y++) {
-        for (int x = 0; x < screen.width(); x++) {
-            string thing = to_string(screen.get(y, x));
-            if (thing == "170" || thing == "175" || thing == "166"){
-                for (int dx = -1; dx < 2; dx++) {
-                    for (int dy= -1; dy < 2; dy++) {
-                        if (y+dy > 0 && y+dy < screen.height() && x+dx > 0 && x+dx < screen.width()) {
-                            
-                            string other = to_string(screen.get(y+dy, x+dx));
-                            if (other == "170" || other == "175" || other == "166"){
-                                count++;
-                            }
-                        }
-                    }
-                }
-                if (count >= 5) {
-                    return Point(x, y);
-                }else{
-                    count = 0;
-                }
-            }
-            
-        }
-    }
-    return Point();
-    //    if (xCount == 0 || yCount == 0 ){
-    //        return Point(-1, -1);
-    //    }else{
-    ////        cout << xTotal << "  " << yTotal << " "<< xCount <<" " << yCount<< endl;
-    ////        cout << (int) floor(xTotal/xCount) << " " << (int) floor(yTotal/yCount);
-    //        return Point((int) floor(xTotal/xCount), (int) floor(yTotal/yCount));
-    //    }
-    
-}
-
-void updatePoints(Point p){
-    lastFour = lastThree;
-    lastThree = lastTwo;
-    lastTwo = lastOne;
-    lastOne = p;
-}
-
-Point calculateSlope(){
-    int x = 0;
-    int y = 0;
-    if(lastFour.x() > 0 && lastFour.y() > 0) {
-        x = lastOne.x() - lastFour.x();
-        y = lastOne.y() - lastFour.y();
-    }
-    return Point(x,y);
-}
-
-void defineTrianglePoints(Point ship, int xSlope, int ySlope){
-    Point first = ship;
-    Point front = Point(ship.x() + 2*xSlope, ship.y() + 2*ySlope);
-    Point second = Point(front.x() + xSlope, front.y() - ySlope);
-    Point third = Point(front.x() - xSlope, front.y() + ySlope);
-    
-    triangleOne = front;
-    triangleTwo = second;
-    triangleThree = third;
-}
