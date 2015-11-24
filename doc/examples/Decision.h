@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-
+#include <string>
 
 #include <SDL.h>
 
@@ -94,6 +94,10 @@ private:
 		triangleTwo = second;
 		triangleThree = third;
 	}
+	float sign(Point one, Point two, Point three){
+		return (one.x() - three.x()) * (two.y() -three.y()) - (two.x() - three.x()) * (one.y() - three.y());
+	}
+
 	bool isPointInsideTriangle(Point p, Point one, Point two, Point three){
 		bool b1 = sign(p, one, two) < 0.0;
 		bool b2 = sign(p,two, three) < 0.0;
@@ -103,15 +107,18 @@ private:
 	}
 
 	int nearShip(vector<string> listInts){
+		//cout << "Slope: " << slope << " P1: " << triangleOne << " P2: " << triangleTwo << " P3: " << triangleThree << endl;
 		if (triangleOne.x() == triangleTwo.x() && triangleOne.y() == triangleTwo.y()) {
-				return 0;
+			return 0;
 		}
 		if (triangleTwo.x() == triangleThree.x() && triangleTwo.y() == triangleThree.y()) {
-				return 0;
+			return 0;
 		}
 		if (triangleThree.x() == triangleOne.x() && triangleThree.y() == triangleOne.y()) {
-				return 0;
+			return 0;
 		}
+			
+		
 
 
 		int Count = 0;
@@ -130,16 +137,15 @@ private:
 		if (Count > 1) {
 			cout << "Might Die " << Count << " P1: " << triangleOne << " P2: " << triangleTwo << " P3: " << triangleThree << endl;
 		}
+		//cout << "nope " << Count;
 		return Count;
 	}
 
-	float sign(Point one, Point two, Point three){
-		return (one.x() - three.x()) * (two.y() -three.y()) - (two.x() - three.x()) * (one.y() - three.y());
-	}
+
 public:
 	
 
-	Decision(ActionVect minimal_actions, ALEScreen s) : screen(10, 10){
+	Decision(ActionVect minimal_actions, ALEScreen s):screen(s){
 		shipCenter = Point(-1, -1);
 		screen = s;
 
@@ -164,9 +170,10 @@ public:
 		shootShieldLeft = minimal_actions[17];
 	}
 	Action getDecision(ALEScreen screen, int lives){
-		//this->screen = screen;
+		this->screen = screen;
 		this->lives = lives;
 		shipCenter = centerOfShip(screen);
+		updatePoints(shipCenter);
 		slope = calculateSlope();
 		defineTrianglePoints(shipCenter, slope.x(), slope.y());
 
@@ -175,6 +182,7 @@ public:
 		badPoints.push_back("244");
 		badPoints.push_back("94");
 		badPoints.push_back("44");
+		badPoints.push_back("54");
 
 		nearShip(badPoints);
 
@@ -182,123 +190,132 @@ public:
 		return minimal_actions[rand() % minimal_actions.size()];
 	}
 
-	friend ostream &operator<<(ostream &output, const Decision &D){
-		output << endl;
-		output << "================================================" <<endl;
+	void print(){
+		cout << endl;
+		cout << "================================================" <<endl;
 		map<string, int> first;
-    //output << screen << endl;
+    //cout << screen << endl;
 		ostringstream os;
-		output << "Size: (" << D.screen.width() << ", " << D.screen.height() << ")" << endl;
-		output << "Ship: ";
+		cout << "Size: (" << screen.width() << ", " << screen.height() << ")" << endl;
+		cout << "Ship: ";
 		//Point p = centerOfShip(screen);
 		//p.print();
-		output << D.shipCenter;
-		output << endl;
-		output << "Slope: ";
+		cout << shipCenter;
+		cout << endl;
+		cout << "Slope: ";
 		//Point slope = calculateSlope();
-		output << D.slope;
-		output << endl;
+		cout << slope;
+		cout << endl;
 		//defineTrianglePoints(p, slope.x(), slope.y());
-		for (int y = 31; y < D.screen.height(); y++) {
-			for (int x = 0; x < D.screen.width(); x++) {
-            //output << "Point: (" << x << ", " << y << ")" << endl;
-				string thing = to_string(D.screen.get(y, x));
+		for (int y = 31; y < screen.height(); y++) {
+			for (int x = 0; x < screen.width(); x++) {
+            //cout << "Point: (" << x << ", " << y << ")" << endl;
+				string thing = to_string(screen.get(y, x));
 				first[thing] += 1;
-				// if (D.shipCenter.x() == x && D.shipCenter.y() == y) {
-				// 	output << "&";
-				// 	continue;
-				// }
-				// if (D.triangleOne.x() == x && D.triangleOne.y() == y) {
-				// 	output << "$";
-				// }
-				// if (D.triangleTwo.x() == x && D.triangleTwo.y() == y) {
-				// 	output << "$";
-				// }
-				// if (D.triangleThree.x() == x && D.triangleThree.y() == y) {
-				// 	output << "$";
-				// }
+				Point p = shipCenter;
+				if (p.x() == x && p.y() == y) {
+					cout << "&";
+					continue;
+				}
+				p = triangleOne;
+				if (p.x() == x && p.y() == y) {
+					cout << "$";
+					continue;
+				}
+				p = triangleTwo;
+
+				if (p.x() == x && p.y() == y) {
+					cout << "$";
+					continue;
+				}
+				p = triangleThree;
+
+				if (p.x() == x && p.y() == y) {
+					cout << "$";
+					continue;
+				}
+
 				if (thing == "0"){
-					output << " ";
+					cout << " ";
 				} else if (thing == "36"){
-					output << "a";
+					cout << "a";
 				} else if (thing == "38"){
-					output << "%";
+					cout << "%";
             } else if (thing == "44"){      // Land on a Planet
-            	output << "%";
+            	cout << "%";
             } else if (thing == "54"){      // Turret/Bunker
-            	output << "I";
+            	cout << "I";
             } else if (thing == "52"){
-            	output << "*";
+            	cout << "*";
             } else if (thing == "56"){
-            	output << "R";
+            	cout << "R";
             } else if (thing == "60"){
-            	output << "T";
+            	cout << "T";
             } else if (thing == "66"){
-            	output << "Q";
+            	cout << "Q";
             } else if (thing == "74"){
-            	output << "b";
+            	cout << "b";
             } else if (thing == "78"){
-            	output << "Y";
+            	cout << "Y";
             } else if (thing == "86"){
-            	output << "X";
+            	cout << "X";
             } else if (thing == "92"){
-            	output << "c";
+            	cout << "c";
             } else if (thing == "94"){
-            	output << "~";
+            	cout << "~";
             } else if (thing == "116"){
-            	output << "P";
+            	cout << "P";
             } else if (thing == "118"){     // Fuel
-            	output << "E";
+            	cout << "E";
             } else if (thing == "120"){
-            	output << "F";
+            	cout << "F";
             } else if (thing == "122"){     // Planet in Upper Left Hand Corner
-            	output << "d";
+            	cout << "d";
             } else if (thing == "136"){
-            	output << "e";
+            	cout << "e";
             } else if (thing == "138"){
-            	output << "f";
+            	cout << "f";
             } else if (thing =="140"){
-            	output << "g";
+            	cout << "g";
             } else if (thing == "156"){     // Starting Circle
-            	output << "h";
+            	cout << "h";
             } else if (thing == "166"){
-            	output << "S";
+            	cout << "S";
             } else if (thing == "170"){     // Ship Doing Nothing
-            	output << "|";
+            	cout << "|";
             } else if (thing == "175"){     // Ship With Shiled On
-            	output << "@";
+            	cout << "@";
             } else if (thing == "188"){
-            	output << "j";
+            	cout << "j";
             } else if (thing == "194"){
-            	output << "Z";
+            	cout << "Z";
             } else if (thing == "196"){
-            	output << "]";
+            	cout << "]";
 			}  else if (thing == "198"){
-				output << "W";
+				cout << "W";
             }  else if (thing == "216"){    // Planet in Left Upper Corner
-            	output << "k";
+            	cout << "k";
             } else if (thing == "244"){
-            	output << "O";
+            	cout << "O";
             }  else if (thing == "250"){
-            	output << "^";
+            	cout << "^";
             } else{
-            	output << "U";
+            	cout << "U";
             }
-            os << D.screen.get(y, x);
-            string str = os.str(); // str is what you want.
-            output << str << " ";
+            // os << screen.get(y, x);
+            // string str = os.str(); // str is what you want.
+            // cout << str << " ";
             
         }
-        output << endl;
+        cout << endl;
     }
-    output << "================================================" <<endl;
-    output << endl;
+    cout << "================================================" <<endl;
+    cout << endl;
     
     for(auto elem : first)
     {
-    	output << elem.first << " " << elem.second << "\n";
+    	cout << elem.first << " " << elem.second << "\n";
     }
-    return output;
 }
 
 };

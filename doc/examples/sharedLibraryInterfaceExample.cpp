@@ -113,6 +113,7 @@ int main(int argc, char** argv) {
 
             // Apply the action and get the resulting reward
             float reward = ale.act(decision.getDecision(ale.getScreen(), ale.lives()));
+			decision.print();
             totalReward += reward;
         }
         count = 0;
