@@ -26,6 +26,7 @@ private:
 	ALEScreen screen;
 	Point shipCenter;
 	int lives;
+	int direction; // 0 -> Up, 4 -> Right, 8 -> Down, 12 -> Left, 
 	ActionVect minimal_actions;
 
 	Action noop, shoot, thrust, turnRight, turnLeft, thrustLeft, shieldRight, shieldLeft, shootThrust,shieldTractor,thrustRight, shootRight, shootLeft, shootShield, shootThrustRight, shootThrustLeft, shootShieldRight, shootShieldLeft;
@@ -135,12 +136,51 @@ private:
 			}
 		}
 		if (Count > 1) {
-			cout << "Might Die " << Count << " P1: " << triangleOne << " P2: " << triangleTwo << " P3: " << triangleThree << endl;
+			//cout << "Might Die " << Count << " P1: " << triangleOne << " P2: " << triangleTwo << " P3: " << triangleThree << endl;
 		}
 		//cout << "nope " << Count;
 		return Count;
 	}
 
+	void updateDirectionRight(){
+		if (direction == 15){
+			direction = 0;
+		} else{
+			direction++;
+		}
+	}
+
+	void updateDirectionLeft(){
+		if (direction == 0){
+			direction = 15;
+		} else{
+			direction--;
+		}
+	}
+
+	void moveDirection(Action action){
+		if (action == turnLeft || action == thrustLeft || action == shootLeft || action == shootThrustLeft || action == shootShieldLeft){
+			updateDirectionLeft();
+		} else if (action == turnRight || action == thrustRight || action == shootRight || action == shootThrustRight || action == shootShieldRight){
+			updateDirectionRight();
+		}
+	}
+
+	void resetDirection(){
+		direction = 0;
+	}
+
+	void printDirection(){
+		if (direction < 2 || direction >= 14){
+			cout << "North " << direction << endl;
+		} else if (direction >= 2 || direction < 6){
+			cout << "East " << direction << endl;
+		}else if (direction >= 6 || direction < 10){
+			cout << "South " << direction << endl;
+		}else if (direction >= 10 || direction < 14){
+			cout << "West " << direction << endl;
+		}
+	}
 
 public:
 	
@@ -169,13 +209,17 @@ public:
 		shootShieldRight = minimal_actions[16];
 		shootShieldLeft = minimal_actions[17];
 	}
-	Action getDecision(ALEScreen screen, int lives){
+	Action getDecision(ALEScreen screen, int lives, bool reset){
 		this->screen = screen;
 		this->lives = lives;
 		shipCenter = centerOfShip(screen);
 		updatePoints(shipCenter);
 		slope = calculateSlope();
 		defineTrianglePoints(shipCenter, slope.x(), slope.y());
+
+		if (reset){
+			resetDirection();
+		}
 
 
 		vector<string> badPoints;
@@ -186,8 +230,10 @@ public:
 
 		nearShip(badPoints);
 
-
-		return minimal_actions[rand() % minimal_actions.size()];
+		Action action = minimal_actions[rand() % minimal_actions.size()];
+		moveDirection(action);
+		printDirection();
+		return action;
 	}
 
 	void print(){

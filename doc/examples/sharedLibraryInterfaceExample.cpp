@@ -97,6 +97,7 @@ int main(int argc, char** argv) {
     int number = 0;
     int count = 0;
     int lastLives = ale.lives();
+    bool reset = false;
 
     Decision decision = Decision(ale.getMinimalActionSet(), ale.getScreen());
         
@@ -108,12 +109,15 @@ int main(int argc, char** argv) {
                 lastLives = ale.lives();
                 number = 0;
                 count = 0;
+                reset = true;
                 cout << " DIE " << endl;
+            } else{
+            	reset = false;
             }
 
             // Apply the action and get the resulting reward
-            float reward = ale.act(decision.getDecision(ale.getScreen(), ale.lives()));
-			decision.print();
+            float reward = ale.act(decision.getDecision(ale.getScreen(), ale.lives(), reset));
+			//decision.print();
             totalReward += reward;
         }
         count = 0;
