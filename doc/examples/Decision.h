@@ -173,14 +173,16 @@ private:
 	void printDirection(){
 		if (direction < 2 || direction >= 14){
 			cout << "North " << direction << endl;
-		} else if (direction >= 2 || direction < 6){
+		} else if (direction >= 2 && direction < 6){
 			cout << "East " << direction << endl;
-		}else if (direction >= 6 || direction < 10){
+		}else if (direction >= 6 && direction < 10){
 			cout << "South " << direction << endl;
-		}else if (direction >= 10 || direction < 14){
+		}else if (direction >= 10 && direction < 14){
 			cout << "West " << direction << endl;
 		}
 	}
+
+	int number = 0;
 
 public:
 	
@@ -230,9 +232,23 @@ public:
 
 		nearShip(badPoints);
 
-		Action action = minimal_actions[rand() % minimal_actions.size()];
+		Action action; //= minimal_actions[rand() % minimal_actions.size()];
+
+      
+       if(number < 10){
+           action = noop;
+           number++;
+          // cout << "NOOP: " << number << " " << to_string(noop) << endl;
+       } else {
+           action = turnRight;
+           number = 0;
+           // cout << "Turn " << count << " " << to_string(turnRight) << endl;
+       }
+
 		moveDirection(action);
 		printDirection();
+
+
 		return action;
 	}
 
