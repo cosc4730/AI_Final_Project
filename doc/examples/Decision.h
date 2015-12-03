@@ -10,6 +10,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 #include <SDL.h>
 
@@ -22,18 +23,18 @@ using namespace ale;
 using namespace std;
    // Two Turns to make 45 degrees
 
-template <typename T>
-    std::string to_string(T value)
-    {
-      //create an output string stream
-      std::ostringstream os ;
+// template <typename T>
+//     std::string to_string(T value)
+//     {
+//       //create an output string stream
+//       std::ostringstream os ;
 
-      //throw the value into the string stream
-      os << value ;
+//       //throw the value into the string stream
+//       os << value ;
 
-      //convert the string stream into a string and return
-      return os.str() ;
-    }
+//       //convert the string stream into a string and return
+//       return os.str() ;
+//     }
 
 class Decision{
 private:
@@ -134,34 +135,109 @@ private:
 	}
 
 	void setFlags(vector<string> listInts, Point center, int size, int threshold){
-		int topLeftCount, topCount, topRightCount, leftCount, rightCount, bottomLeftCount, bottomCount, bottomRightCount = 0;
+		int topLeftCount = 0;
+		int topCount = 0;
+		int topRightCount = 0;
+		int leftCount = 0;
+		int rightCount = 0;
+		int bottomLeftCount = 0;
+		int bottomCount = 0;
+		int bottomRightCount = 0;
 
-		for(int x=-size; x < size;x++){
-			for (int y = -size; y < size; y++){
-				string screenPoint = to_string(screen.get(x, y));
-				if (find(listInts.begin(), listInts.end(), screenPoint) != listInts.end()) {
-					if(x < (center.x() + (-size/3)) && y > (center.y() +(size/3))){  // Top Left
+		// This might look weird but (0, 0) is the top left
+		int leftBoarder = center.x() - (size/3);
+		int rightBoarder = center.x() + (size/3);
+		int topBoarder = center.y() - (size/3);
+		int bottomBoarder = center.y() + (size/3);
+
+		for(int x= center.x()-size; x < center.x()+size;x++){
+			if (x < 0 || x >= screen.width()){
+				continue;
+			}
+			for (int y = center.y()-size; y < center.y() + size; y++){
+				if ( y < 31 || y >= screen.height()){
+					continue;
+				}
+				string screenPoint = to_string(screen.get(y, x));
+				if (find(listInts.begin(), listInts.end(), screenPoint) != listInts.end()){
+					if(x <= leftBoarder && y <= topBoarder){  // Top Left
 						topLeftCount++;
-					} else if (x < (center.x() + (size/3)) && y > (center.y() + (size/3))){ // Top Right
+					} else if (x >= rightBoarder && y <= topBoarder){ // Top Right
 						topRightCount++;
-					} else if (x > (center.x() + (size/3)) && y < (center.y() +(-size/3))){  // Bottom Right
+					} else if (x >= rightBoarder && y >= bottomBoarder){  // Bottom Right
 						bottomRightCount++;
-					} else if (x < (center.x() + (-size/3)) && y < (center.y() +(-size/3))){  // Bottom Left
+					} else if (x <= leftBoarder && y >= bottomBoarder){  // Bottom Left
 						bottomLeftCount++;
-					} else if (x > (center.x() + (-size/3)) && x < (center.x() + (size/3)) && y > (center.y() +(size/3))){ // Top
+					} else if (x >= leftBoarder && x <= rightBoarder && y <= topBoarder){ // Top
 						topCount++;
-					} else if (x > (center.x() + (size/3)) && y < (center.y() +(size/3)) && y > (center.y() +(-size/3))){ // Right
+					} else if (x >= rightBoarder && y >= topBoarder && y <= bottomBoarder){ // Right
 						rightCount++;
-					} else if (x > (center.x() + (-size/3)) && x < (center.x() + (size/3)) && y < (center.y() +(-size/3))){ // Bottom
+					} else if (x >= leftBoarder && x <= rightBoarder && y >= bottomBoarder){ // Bottom
 						bottomCount++;
-					} else if (x < (center.x() + (-size/3)) && y < (center.y() +(size/3)) && y > (center.y() +(-size/3))){ // Left
+					} else if (x <= leftBoarder && y >= topBoarder && y <= bottomBoarder){ // Left
 						leftCount++;
 					}
 
 				}
 			}
 		}
+		if (topLeftCount >= threshold){
+			flag_top_left = true;
+		} else {
+			flag_top_left = false;
+		}
 
+		if (topCount >= threshold){
+			flag_top = true;
+		} else {
+			flag_top = false;
+		}
+
+		if (topRightCount >= threshold){
+			flag_top_right = true;
+		} else {
+			flag_top_right = false;
+		}
+
+		if (rightCount >= threshold){
+			flag_right = true;
+		} else {
+			flag_right = false;
+		}
+
+		if (bottomRightCount >= threshold){
+			flag_bottom_right = true;
+		} else {
+			flag_bottom_right = false;
+		}
+
+		if (bottomCount >= threshold){
+			flag_bottom = true;
+		} else {
+			flag_bottom = false;
+		}
+
+		if (bottomLeftCount >= threshold){
+			flag_bottom_left = true;
+		} else {
+			flag_bottom_left = false;
+		}
+
+		if (leftCount >= threshold){
+			flag_left = true;
+		} else {
+			flag_left = false;
+		}
+		cout << endl;
+		cout << topLeftCount << " " << topCount << " " << topRightCount << endl;
+		cout << leftCount << " # " << rightCount << endl;
+		cout << bottomLeftCount << " " << bottomCount << " " << bottomRightCount << endl;				
+	}
+
+	void printFlags(){
+		cout << flag_top_left << " " << flag_top << " " << flag_top_right << endl;
+		cout << flag_left << " X " << flag_right << endl;
+		cout << flag_bottom_left << " " << flag_bottom << " " << flag_bottom_right << endl;
 	}
 
 	int nearShip(vector<string> listInts){
@@ -286,24 +362,30 @@ public:
 		badPoints.push_back("94");
 		badPoints.push_back("44");
 		badPoints.push_back("54");
+		badPoints.push_back("38");
+		badPoints.push_back("122");
 
-		nearShip(badPoints);
+		//nearShip(badPoints);
 
-		Action action; //= minimal_actions[rand() % minimal_actions.size()];
+		setFlags(badPoints, shipCenter ,30, 6);
+		//cout << "=====" << endl;
+		//printFlags();
+
+		Action action = minimal_actions[rand() % minimal_actions.size()];
 
       
-       if(number < 10){
-           action = noop;
-           number++;
-          // cout << "NOOP: " << number << " " << to_string(noop) << endl;
-       } else {
-           action = turnRight;
-           number = 0;
-           // cout << "Turn " << count << " " << to_string(turnRight) << endl;
-       }
+       // if(number < 10){
+       //     action = noop;
+       //     number++;
+       //    // cout << "NOOP: " << number << " " << to_string(noop) << endl;
+       // } else {
+       //     action = turnRight;
+       //     number = 0;
+       //     // cout << "Turn " << count << " " << to_string(turnRight) << endl;
+       // }
 
 		moveDirection(action);
-		printDirection();
+		//printDirection();
 
 
 		return action;
@@ -388,7 +470,7 @@ public:
             	cout << "E";
             } else if (thing == "120"){
             	cout << "F";
-            } else if (thing == "122"){     // Planet in Upper Left Hand Corner
+            } else if (thing == "122"){     // Planet in Upper Right Hand Corner
             	cout << "d";
             } else if (thing == "136"){
             	cout << "e";
