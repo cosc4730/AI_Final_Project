@@ -13,11 +13,11 @@ using namespace std;
 
 class Point {
 private:
-    int xval, yval;
+    float xval, yval;
 public:
     // Constructor uses default arguments to allow calling with zero, one,
     // or two values.
-    Point(int x = -1, int y = -1) {
+    Point(float x = -1, float y = -1) {
         xval = x;
         yval = y;
     }

@@ -1,5 +1,5 @@
 // Me and Kegan
-250
+3100
 
 
 // if speed is less than 5 in any direction then  thurstshoot and turn right otherwise do a random action from no thurust list
@@ -28,3 +28,16 @@ Episode 8 ended with score: 0
 Episode 9 ended with score: 0
 Average Reward: 235
 
+// With “improved” Data Points
+Random seed is 123
+Episode 0 ended with score: 250
+Episode 1 ended with score: 500
+asEpisode 2 ended with score: 0
+Episode 3 ended with score: 0
+Episode 4 ended with score: 100
+Episode 5 ended with score: 200
+Episode 6 ended with score: 500
+Episode 7 ended with score: 0
+Episode 8 ended with score: 0
+Episode 9 ended with score: 0
+Average Reward: 155

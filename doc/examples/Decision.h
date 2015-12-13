@@ -46,6 +46,8 @@ private:
 	int direction; // 0 -> Up, 4 -> Right, 8 -> Down, 12 -> Left, 
 	bool flag_top_left, flag_top, flag_top_right, flag_right, flag_bottom_right, flag_bottom, flag_bottom_left, flag_left = false;
 	bool flag_top_left_R, flag_top_R, flag_top_right_R, flag_right_R, flag_bottom_right_R, flag_bottom_R, flag_bottom_left_R, flag_left_R = false;
+	bool flag_front_All, flag_right_All, flag_back_All, flag_left_All = false;
+	bool flag_front_Any, flag_right_Any, flag_back_Any, flag_left_Any = false;
 	bool flag_north, flag_east, flag_south, flag_west;
 	ActionVect minimal_actions;
 	ActionVect no_thrust_actions;
@@ -54,6 +56,7 @@ private:
 	Point lastOne, lastTwo, lastThree, lastFour;
 	Point triangleOne, triangleTwo, triangleThree;
 	Point slope;
+	vector<string> badPoints;
 
 	void updatePoints(Point p){
 		if (timePoints == timeToUpdatePoints){
@@ -68,8 +71,8 @@ private:
 
 	}
 	Point calculateSlope(){
-		int x = 0;
-		int y = 0;
+		float x = 0;
+		float y = 0;
 		if(lastFour.x() > 0 && lastFour.y() > 0) {
 			x = lastOne.x() - lastFour.x();
 			y = lastOne.y() - lastFour.y();
@@ -160,7 +163,7 @@ private:
 					continue;
 				}
 				string screenPoint = to_string(screen.get(y, x));
-				if (find(listInts.begin(), listInts.end(), screenPoint) != listInts.end()){
+				if (!isShip(screenPoint) && screenPoint != "0"){
 					if(x <= leftBoarder && y <= topBoarder){  // Top Left
 						topLeftCount++;
 					} else if (x >= rightBoarder && y <= topBoarder){ // Top Right
@@ -342,42 +345,174 @@ private:
 	}
 
 	void convertFlagsToRelative(){
-		if (flag_north){
-			flag_top_R = flag_top;
-			flag_top_right_R = flag_top_right;
-			flag_right_R = flag_right;
-			flag_bottom_right_R = flag_bottom_right;
-			flag_bottom_R = flag_bottom;
-			flag_bottom_left_R = flag_bottom_left;
-			flag_left_R = flag_left;
-			flag_top_left_R = flag_top_left;
-		} else if (flag_east){
-			flag_top_R = flag_right;
-			flag_top_right_R = flag_bottom_right;
-			flag_right_R = flag_bottom;
-			flag_bottom_right_R = flag_bottom_left;
-			flag_bottom_R = flag_left;
-			flag_bottom_left_R = flag_top_left;
-			flag_left_R = flag_top;
-			flag_top_left_R = flag_top_right;
-		} else if (flag_south){
-			flag_top_R = flag_bottom;
-			flag_top_right_R = flag_bottom_left;
-			flag_right_R = flag_left;
-			flag_bottom_right_R = flag_top_left;
-			flag_bottom_R = flag_top;
-			flag_bottom_left_R = flag_top_right;
-			flag_left_R = flag_right;
-			flag_top_left_R = flag_bottom_right;
-		} else if (flag_west){
-			flag_top_R = flag_left;
-			flag_top_right_R = flag_top_left;
-			flag_right_R = flag_top;
-			flag_bottom_right_R = flag_top_right;
-			flag_bottom_R = flag_right;
-			flag_bottom_left_R = flag_bottom_right;
-			flag_left_R = flag_bottom;
-			flag_top_left_R = flag_bottom_left;
+		if (actionTurns == 0){  // Cardinal Direction
+			if (flag_north){
+				flag_top_R = flag_top;
+				flag_top_right_R = flag_top_right;
+				flag_right_R = flag_right;
+				flag_bottom_right_R = flag_bottom_right;
+				flag_bottom_R = flag_bottom;
+				flag_bottom_left_R = flag_bottom_left;
+				flag_left_R = flag_left;
+				flag_top_left_R = flag_top_left;
+
+			} else if (flag_east){
+				flag_top_R = flag_right;
+				flag_top_right_R = flag_bottom_right;
+				flag_right_R = flag_bottom;
+				flag_bottom_right_R = flag_bottom_left;
+				flag_bottom_R = flag_left;
+				flag_bottom_left_R = flag_top_left;
+				flag_left_R = flag_top;
+				flag_top_left_R = flag_top_right;
+
+			} else if (flag_south){
+				flag_top_R = flag_bottom;
+				flag_top_right_R = flag_bottom_left;
+				flag_right_R = flag_left;
+				flag_bottom_right_R = flag_top_left;
+				flag_bottom_R = flag_top;
+				flag_bottom_left_R = flag_top_right;
+				flag_left_R = flag_right;
+				flag_top_left_R = flag_bottom_right;
+			} else if (flag_west){
+				flag_top_R = flag_left;
+				flag_top_right_R = flag_top_left;
+				flag_right_R = flag_top;
+				flag_bottom_right_R = flag_top_right;
+				flag_bottom_R = flag_right;
+				flag_bottom_left_R = flag_bottom_right;
+				flag_left_R = flag_bottom;
+				flag_top_left_R = flag_bottom_left;
+			}
+		} else if (actionTurns > 0){ // Toward Right
+			if (flag_north){ // NE
+				flag_top_R = flag_top_right;
+				flag_top_right_R = flag_right;
+				flag_right_R = flag_bottom_right;
+				flag_bottom_right_R = flag_bottom;
+				flag_bottom_R = flag_bottom_left;
+				flag_bottom_left_R = flag_left;
+				flag_left_R = flag_top_left;
+				flag_top_left_R = flag_top;
+
+			} else if (flag_east){ // SE
+				flag_top_R = flag_bottom_right;
+				flag_top_right_R = flag_bottom;
+				flag_right_R = flag_bottom_left;
+				flag_bottom_right_R = flag_left;
+				flag_bottom_R = flag_top_left;
+				flag_bottom_left_R = flag_top;
+				flag_left_R = flag_top_right;
+				flag_top_left_R = flag_right;
+
+			} else if (flag_south){ // SW
+				flag_top_R = flag_bottom_left;
+				flag_top_right_R = flag_left;
+				flag_right_R = flag_top_left;
+				flag_bottom_right_R = flag_top;
+				flag_bottom_R = flag_top_right;
+				flag_bottom_left_R = flag_right;
+				flag_left_R = flag_bottom_right;
+				flag_top_left_R = flag_bottom;
+			} else if (flag_west){ //NW
+				flag_top_R = flag_top_left;
+				flag_top_right_R = flag_top;
+				flag_right_R = flag_top_right;
+				flag_bottom_right_R = flag_right;
+				flag_bottom_R = flag_bottom_right;
+				flag_bottom_left_R = flag_bottom;
+				flag_left_R = flag_bottom_left;
+				flag_top_left_R = flag_left;
+			}
+		} else if (actionTurns < 0){ // Toward Left
+			if (flag_north){ // NW
+				flag_top_R = flag_top_left;
+				flag_top_right_R = flag_top;
+				flag_right_R = flag_top_right;
+				flag_bottom_right_R = flag_right;
+				flag_bottom_R = flag_bottom_right;
+				flag_bottom_left_R = flag_bottom;
+				flag_left_R = flag_bottom_left;
+				flag_top_left_R = flag_left;
+
+			} else if (flag_east){ // NE
+				flag_top_R = flag_top_right;
+				flag_top_right_R = flag_right;
+				flag_right_R = flag_bottom_right;
+				flag_bottom_right_R = flag_bottom;
+				flag_bottom_R = flag_bottom_left;
+				flag_bottom_left_R = flag_left;
+				flag_left_R = flag_top_left;
+				flag_top_left_R = flag_top;
+
+			} else if (flag_south){ // SE
+				flag_top_R = flag_bottom_right;
+				flag_top_right_R = flag_bottom;
+				flag_right_R = flag_bottom_left;
+				flag_bottom_right_R = flag_left;
+				flag_bottom_R = flag_top_left;
+				flag_bottom_left_R = flag_top;
+				flag_left_R = flag_top_right;
+				flag_top_left_R = flag_right;
+			} else if (flag_west){ // SW
+				flag_top_R = flag_bottom_left;
+				flag_top_right_R = flag_left;
+				flag_right_R = flag_top_left;
+				flag_bottom_right_R = flag_top;
+				flag_bottom_R = flag_top_right;
+				flag_bottom_left_R = flag_right;
+				flag_left_R = flag_bottom_right;
+				flag_top_left_R = flag_bottom;
+			}
+		}
+
+		if (flag_top_left_R	&& flag_top_R && flag_top_right_R){
+			flag_front_All = true;
+		} else{
+			flag_front_All = false;
+		}
+
+		if (flag_top_right_R && flag_right_R && flag_bottom_right_R){
+			flag_right_All = true;
+		} else{
+			flag_right_All = false;
+		}
+
+		if (flag_bottom_right_R	&& flag_bottom_R && flag_bottom_left_R){
+			flag_back_All = true;
+		} else{
+			flag_back_All = false;
+		}
+
+		if (flag_top_left_R	&& flag_left_R && flag_bottom_left_R){
+			flag_left_All = true;
+		} else{
+			flag_left_All = false;
+		}
+
+		if (flag_top_left_R	|| flag_top_R || flag_top_right_R){
+			flag_front_Any = true;
+		} else{
+			flag_front_Any = false;
+		}
+
+		if (flag_top_right_R || flag_right_R || flag_bottom_right_R){
+			flag_right_Any = true;
+		} else{
+			flag_right_Any = false;
+		}
+
+		if (flag_bottom_right_R	|| flag_bottom_R || flag_bottom_left_R){
+			flag_back_Any = true;
+		} else{
+			flag_back_Any = false;
+		}
+
+		if (flag_top_left_R	|| flag_left_R || flag_bottom_left_R){
+			flag_left_Any = true;
+		} else{
+			flag_left_Any = false;
 		}
 	}
 
@@ -500,6 +635,28 @@ public:
 		no_thrust_actions.push_back(shootShield);
 		no_thrust_actions.push_back(shootShieldLeft);
 		no_thrust_actions.push_back(shootShieldRight);
+
+		badPoints.push_back("244");
+		badPoints.push_back("94");
+		badPoints.push_back("44");
+		badPoints.push_back("54");
+		badPoints.push_back("38");
+		//badPoints.push_back("122");
+		
+		badPoints.push_back("36"); // bad planet left and bad guys
+		badPoints.push_back("92"); // bottom right planet
+		badPoints.push_back("188"); // bottom left planet
+		badPoints.push_back("216"); // top left Planet
+
+		badPoints.push_back("184"); // Somtimes the black hole
+		badPoints.push_back("186"); // Somtimes the black hole
+		badPoints.push_back("190"); // Somtimes the black hole
+		badPoints.push_back("192"); // Somtimes the black hole
+		badPoints.push_back("194"); // Somtimes the black hole
+		badPoints.push_back("196"); // Somtimes the black hole
+		badPoints.push_back("198"); // Somtimes the black hole
+		badPoints.push_back("200");
+
 	}
 	Action getDecision(ALEScreen screen, int lives, bool reset){
 		this->screen = screen;
@@ -513,25 +670,13 @@ public:
 			resetTurns();
 		}
 
-
-		vector<string> badPoints;
-		badPoints.push_back("244");
-		badPoints.push_back("94");
-		badPoints.push_back("44");
-		badPoints.push_back("54");
-		badPoints.push_back("38");
-		badPoints.push_back("122");
-
-		//nearShip(badPoints);
-
-
 		setFlags(badPoints, shipCenter, 30, 6);
 		convertFlagsToRelative();
 
 		//cout << "=====" << endl;
 		//printFlags();
 
-		Action action = avoidShit();
+		Action action = minimal_actions[rand() % no_thrust_actions.size()];//= avoidShit();
 		if (action == noop){
 			action = no_thrust_actions[rand() % no_thrust_actions.size()];
 		}
@@ -556,14 +701,32 @@ public:
 
 		//print();
 		//printDirection();
+		// cout << action << endl;
 
 		return action;
 	}
 
 	Action avoidShit(){
-		if (flag_bottom_R){
+		// if (slope_R )
+		if(flag_front_All){
+			return turnRight;
+		}
+
+		if (flag_left_All || (flag_bottom && flag_left_Any)){
+			return thrustRight;
+		}
+
+		if (flag_right_All || (flag_bottom && flag_right_Any)){
+			return thrustLeft;
+		}
+
+
+		
+		if (flag_back_All || flag_bottom){
 			return thrust;
-		} else if (flag_top_R){
+		}
+
+		if (flag_top_R){
 			return turnRight;
 		} else if (flag_top_left_R){
 			return thrustRight;
@@ -578,8 +741,8 @@ public:
 		} else if (flag_bottom_right_R){
 			return thrustLeft;
 		}
-		if ( slope.x() < 5 && slope.y()< 5){
-			return shootThrust;
+		if ( abs(slope.x()) < 2 && abs(slope.y())< 2){
+			return shootThrustRight;
 		}
 		return noop;
 	}

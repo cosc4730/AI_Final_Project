@@ -1,0 +1,2 @@
+// Random Agent
+// 8 min. for random agent to get 235
