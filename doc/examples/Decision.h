@@ -11,18 +11,15 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
-
 #include <SDL.h>
 
 
 #include "Point.h"
 
-
-
 using namespace ale;
 using namespace std;
    // Two Turns to make 45 degrees
-
+// #ifndef to_string
 // template <typename T>
 //     std::string to_string(T value)
 //     {
@@ -35,15 +32,23 @@ using namespace std;
 //       //convert the string stream into a string and return
 //       return os.str() ;
 //     }
+// #endif
 
 class Decision{
 private:
 	ALEScreen screen;
 	Point shipCenter;
 	int lives;
+	int countTurns = 0;
+	int actionTurns = 0;
+	int timeToUpdatePoints = 5;
+	int timePoints = 0;
 	int direction; // 0 -> Up, 4 -> Right, 8 -> Down, 12 -> Left, 
 	bool flag_top_left, flag_top, flag_top_right, flag_right, flag_bottom_right, flag_bottom, flag_bottom_left, flag_left = false;
+	bool flag_top_left_R, flag_top_R, flag_top_right_R, flag_right_R, flag_bottom_right_R, flag_bottom_R, flag_bottom_left_R, flag_left_R = false;
+	bool flag_north, flag_east, flag_south, flag_west;
 	ActionVect minimal_actions;
+	ActionVect no_thrust_actions;
 
 	Action noop, shoot, thrust, turnRight, turnLeft, thrustLeft, shieldRight, shieldLeft, shootThrust,shieldTractor,thrustRight, shootRight, shootLeft, shootShield, shootThrustRight, shootThrustLeft, shootShieldRight, shootShieldLeft;
 	Point lastOne, lastTwo, lastThree, lastFour;
@@ -51,10 +56,16 @@ private:
 	Point slope;
 
 	void updatePoints(Point p){
-		lastFour = lastThree;
-		lastThree = lastTwo;
-		lastTwo = lastOne;
-		lastOne = p;
+		if (timePoints == timeToUpdatePoints){
+			lastFour = lastThree;
+			lastThree = lastTwo;
+			lastTwo = lastOne;
+			lastOne = p;
+			timePoints = 0;
+		}else{
+			timePoints++;
+		}
+
 	}
 	Point calculateSlope(){
 		int x = 0;
@@ -92,13 +103,13 @@ private:
 			}
 		}
 		return Point();
-    //    if (xCount == 0 || yCount == 0 ){
-    //        return Point(-1, -1);
-    //    }else{
-    ////        cout << xTotal << "  " << yTotal << " "<< xCount <<" " << yCount<< endl;
-    ////        cout << (int) floor(xTotal/xCount) << " " << (int) floor(yTotal/yCount);
-    //        return Point((int) floor(xTotal/xCount), (int) floor(yTotal/yCount));
-    //    }
+	//    if (xCount == 0 || yCount == 0 ){
+	//        return Point(-1, -1);
+	//    }else{
+	////        cout << xTotal << "  " << yTotal << " "<< xCount <<" " << yCount<< endl;
+	////        cout << (int) floor(xTotal/xCount) << " " << (int) floor(yTotal/yCount);
+	//        return Point((int) floor(xTotal/xCount), (int) floor(yTotal/yCount));
+	//    }
 
 	}
 	void defineTrianglePoints(Point ship, int xSlope, int ySlope){
@@ -122,16 +133,6 @@ private:
 		bool b3 = sign(p, three, one) < 0.0;
 
 		return ((b1 == b2) && (b2==b3));
-	}
-
-	bool inCircle(int centerX, int centerY, int radius, int x,int y){
-		double dist = sqrt(pow((centerX - x),2) + pow((centerY - y),2));
-		return dist <= radius;	
-	}
-
-	int nearShipCircle(vector<string> listInts){
-
-		return 0;
 	}
 
 	void setFlags(vector<string> listInts, Point center, int size, int threshold){
@@ -228,10 +229,156 @@ private:
 		} else {
 			flag_left = false;
 		}
-		cout << endl;
-		cout << topLeftCount << " " << topCount << " " << topRightCount << endl;
-		cout << leftCount << " # " << rightCount << endl;
-		cout << bottomLeftCount << " " << bottomCount << " " << bottomRightCount << endl;				
+		// cout << endl;
+		// cout << topLeftCount << " " << topCount << " " << topRightCount << endl;
+		// cout << leftCount << " # " << rightCount << endl;
+		// cout << bottomLeftCount << " " << bottomCount << " " << bottomRightCount << endl;				
+	}
+
+	bool isShip(string character){
+		return (character == "170" || character == "175" || character == "166");
+	}
+
+
+	void setDirectionFlags(){
+		// The full direction looks like the followig
+		//
+		//  %
+		//  %
+		//  %
+		//  %
+		//  % <- Ship Center
+		// %%%
+		// %%%
+
+		//thing == "170" || thing == "175" || thing == "166"
+
+		int x = shipCenter.x();
+		int y = shipCenter.y();
+		if (x < 4 || x > screen.width() - 4){
+			return;
+		}
+		if (y < 4 || y > screen.height() - 4){
+			return;
+		}
+
+
+		string one = to_string(screen.get(y - 4, x));
+		string two = to_string(screen.get(y - 3, x));
+		string three = to_string(screen.get(y - 2, x));
+		string four = to_string(screen.get(y - 1, x));
+		string five = to_string(screen.get(y + 1, x - 1));
+		string six = to_string(screen.get(y + 1, x));
+		string seven = to_string(screen.get(y + 1, x + 1));
+		string eight = to_string(screen.get(y + 2, x - 1));
+		string nine = to_string(screen.get(y + 2, x));
+		string ten = to_string(screen.get(y + 2, x + 1));
+		string eleven = to_string(screen.get(y, x));
+		if (isShip(one) && isShip(two) &&isShip(three) &&isShip(four) &&isShip(five) &&isShip(six) &&isShip(seven) &&isShip(eight) &&isShip(nine) &&isShip(ten)){ // North
+				flag_north = true;
+				flag_south = false;
+				flag_west = false;
+				flag_east = false;
+		}
+
+				// EASt  ** TODO ** 
+		one = to_string(screen.get(y - 2, x));
+		two = to_string(screen.get(y - 1, x));
+		three = to_string(screen.get(y, x));
+		four = to_string(screen.get(y + 1, x));
+		five = to_string(screen.get(y + 2, x));
+		six = to_string(screen.get(y + 3, x));
+		seven = to_string(screen.get(y + 1, x + 1));
+		eight = to_string(screen.get(y, x + 2));
+		nine = to_string(screen.get(y + 1, x + 2));
+		ten = to_string(screen.get(y, x + 3));
+		eleven = to_string(screen.get(y + 1, x + 3));
+		if(isShip(one) && isShip(two) &&isShip(three) &&isShip(four) &&isShip(five) &&isShip(six) &&isShip(seven) &&isShip(eight) &&isShip(nine) &&isShip(ten) &&isShip(eleven) ){
+				flag_north = false;
+				flag_south = false;
+				flag_west = false;
+				flag_east = true;
+		}
+
+
+				// South TODO
+		one = to_string(screen.get(y, x - 1));
+		two = to_string(screen.get(y, x + 1));
+		three = to_string(screen.get(y + 1, x - 1));
+		four = to_string(screen.get(y + 1, x));
+		five = to_string(screen.get(y + 1, x + 1));
+		six = to_string(screen.get(y + 2, x));
+		seven = to_string(screen.get(y + 3, x));
+		eight = to_string(screen.get(y + 4, x));
+		nine = to_string(screen.get(y + 5, x));
+		ten = to_string(screen.get(y, x));
+		eleven = to_string(screen.get(y + 1, x));
+		if(isShip(one) && isShip(two) &&isShip(three) &&isShip(four) &&isShip(five) &&isShip(six) &&isShip(seven) &&isShip(eight) &&isShip(nine) &&isShip(ten)){
+				flag_north = false;
+				flag_south = true;
+				flag_west = false;
+				flag_east = false;
+		}
+
+				// West
+		one = to_string(screen.get(y - 2, x + 2));
+		two = to_string(screen.get(y - 1, x + 2));
+		three = to_string(screen.get(y, x + 2));
+		four = to_string(screen.get(y + 1, x + 2));
+		five = to_string(screen.get(y + 2, x + 2));
+		six = to_string(screen.get(y + 3, x + 2));
+		seven = to_string(screen.get(y, x + 1));
+		eight = to_string(screen.get(y + 1, x + 1));
+		nine = to_string(screen.get(y + 1, x));
+		ten = to_string(screen.get(y, x - 1));
+		eleven = to_string(screen.get(y + 1, x - 1));
+		if(isShip(one) && isShip(two) &&isShip(three) &&isShip(four) &&isShip(five) &&isShip(six) &&isShip(seven) &&isShip(eight) &&isShip(nine) &&isShip(ten) &&isShip(eleven) ){
+				flag_north = false;
+				flag_south = false;
+				flag_west = true;
+				flag_east = false;
+		}
+
+	}
+
+	void convertFlagsToRelative(){
+		if (flag_north){
+			flag_top_R = flag_top;
+			flag_top_right_R = flag_top_right;
+			flag_right_R = flag_right;
+			flag_bottom_right_R = flag_bottom_right;
+			flag_bottom_R = flag_bottom;
+			flag_bottom_left_R = flag_bottom_left;
+			flag_left_R = flag_left;
+			flag_top_left_R = flag_top_left;
+		} else if (flag_east){
+			flag_top_R = flag_right;
+			flag_top_right_R = flag_bottom_right;
+			flag_right_R = flag_bottom;
+			flag_bottom_right_R = flag_bottom_left;
+			flag_bottom_R = flag_left;
+			flag_bottom_left_R = flag_top_left;
+			flag_left_R = flag_top;
+			flag_top_left_R = flag_top_right;
+		} else if (flag_south){
+			flag_top_R = flag_bottom;
+			flag_top_right_R = flag_bottom_left;
+			flag_right_R = flag_left;
+			flag_bottom_right_R = flag_top_left;
+			flag_bottom_R = flag_top;
+			flag_bottom_left_R = flag_top_right;
+			flag_left_R = flag_right;
+			flag_top_left_R = flag_bottom_right;
+		} else if (flag_west){
+			flag_top_R = flag_left;
+			flag_top_right_R = flag_top_left;
+			flag_right_R = flag_top;
+			flag_bottom_right_R = flag_top_right;
+			flag_bottom_R = flag_right;
+			flag_bottom_left_R = flag_bottom_right;
+			flag_left_R = flag_bottom;
+			flag_top_left_R = flag_bottom_left;
+		}
 	}
 
 	void printFlags(){
@@ -275,46 +422,44 @@ private:
 		return Count;
 	}
 
-	void updateDirectionRight(){
-		if (direction == 15){
-			direction = 0;
-		} else{
-			direction++;
-		}
-	}
-
-	void updateDirectionLeft(){
-		if (direction == 0){
-			direction = 15;
-		} else{
-			direction--;
-		}
-	}
 
 	void moveDirection(Action action){
 		if (action == turnLeft || action == thrustLeft || action == shootLeft || action == shootThrustLeft || action == shootShieldLeft){
-			updateDirectionLeft();
+			actionTurns--;
 		} else if (action == turnRight || action == thrustRight || action == shootRight || action == shootThrustRight || action == shootShieldRight){
-			updateDirectionRight();
+			actionTurns++;
+		}
+
+		bool n = flag_north;
+		bool e = flag_east;
+		bool s = flag_south;
+		bool w = flag_west;
+		setDirectionFlags();
+
+		if (n != flag_north || e != flag_east || s != flag_south || w != flag_west){
+			resetTurns();
 		}
 	}
 
-	void resetDirection(){
-		direction = 0;
+	void resetTurns(){
+		actionTurns = 0;
 	}
 
 	void printDirection(){
-		if (direction < 2 || direction >= 14){
-			cout << "North " << direction << endl;
-		} else if (direction >= 2 && direction < 6){
-			cout << "East " << direction << endl;
-		}else if (direction >= 6 && direction < 10){
-			cout << "South " << direction << endl;
-		}else if (direction >= 10 && direction < 14){
-			cout << "West " << direction << endl;
+		if (flag_north){
+			cout << "North T:" << actionTurns << endl; 
+		} else if (flag_east){
+			cout << "East T:" << actionTurns << endl; 
+		} else if (flag_south){
+			cout << "South T:" << actionTurns << endl; 
+		} else if (flag_west){
+			cout << "West T:" << actionTurns <<endl; 
 		}
 	}
-
+	// cout << slope << endl;
+	// cout << " " << flag_north << " " << endl;
+	// cout << flag_west << " " << flag_east << endl;
+	// cout << " " << flag_south << " " << endl << endl;
 	int number = 0;
 
 public:
@@ -343,6 +488,18 @@ public:
 		shootThrustLeft = minimal_actions[15];
 		shootShieldRight = minimal_actions[16];
 		shootShieldLeft = minimal_actions[17];
+
+		no_thrust_actions.push_back(shoot);
+		no_thrust_actions.push_back(turnLeft);
+		no_thrust_actions.push_back(thrustRight);
+		no_thrust_actions.push_back(shieldTractor);
+		no_thrust_actions.push_back(shieldLeft);
+		no_thrust_actions.push_back(shieldRight);
+		no_thrust_actions.push_back(shootLeft);
+		no_thrust_actions.push_back(shootRight);
+		no_thrust_actions.push_back(shootShield);
+		no_thrust_actions.push_back(shootShieldLeft);
+		no_thrust_actions.push_back(shootShieldRight);
 	}
 	Action getDecision(ALEScreen screen, int lives, bool reset){
 		this->screen = screen;
@@ -353,7 +510,7 @@ public:
 		defineTrianglePoints(shipCenter, slope.x(), slope.y());
 
 		if (reset){
-			resetDirection();
+			resetTurns();
 		}
 
 
@@ -367,35 +524,71 @@ public:
 
 		//nearShip(badPoints);
 
-		setFlags(badPoints, shipCenter ,30, 6);
+
+		setFlags(badPoints, shipCenter, 30, 6);
+		convertFlagsToRelative();
+
 		//cout << "=====" << endl;
 		//printFlags();
 
-		Action action = minimal_actions[rand() % minimal_actions.size()];
-
-      
-       // if(number < 10){
-       //     action = noop;
-       //     number++;
-       //    // cout << "NOOP: " << number << " " << to_string(noop) << endl;
-       // } else {
-       //     action = turnRight;
-       //     number = 0;
-       //     // cout << "Turn " << count << " " << to_string(turnRight) << endl;
-       // }
+		Action action = avoidShit();
+		if (action == noop){
+			action = no_thrust_actions[rand() % no_thrust_actions.size()];
+		}
+	  
+	   // if(number < 10){
+	   //     action = noop;
+	   //     number++;
+	   //    // cout << "NOOP: " << number << " " << to_string(noop) << endl;
+	   // } else {
+	   //     action = turnRight;
+	   //     if (countTurns < 2){
+	   //     	countTurns++;
+	   //     }else{
+	   //     	countTurns = 0;
+	   //     	number = 0; 
+	   //     }
+	   //     // cout << "Turn " << count << " " << to_string(turnRight) << endl;
+	   // }
 
 		moveDirection(action);
+		setDirectionFlags();
+
+		//print();
 		//printDirection();
 
-
 		return action;
+	}
+
+	Action avoidShit(){
+		if (flag_bottom_R){
+			return thrust;
+		} else if (flag_top_R){
+			return turnRight;
+		} else if (flag_top_left_R){
+			return thrustRight;
+		} else if (flag_top_right_R){
+			return thrustLeft;
+		} else if (flag_left_R){
+			return thrustRight;
+		} else if (flag_right_R){
+			return thrustLeft;
+		} else if (flag_bottom_left_R){
+			return thrustRight;
+		} else if (flag_bottom_right_R){
+			return thrustLeft;
+		}
+		if ( slope.x() < 5 && slope.y()< 5){
+			return shootThrust;
+		}
+		return noop;
 	}
 
 	void print(){
 		cout << endl;
 		cout << "================================================" <<endl;
 		map<string, int> first;
-    //cout << screen << endl;
+		//cout << screen << endl;
 		ostringstream os;
 		cout << "Size: (" << screen.width() << ", " << screen.height() << ")" << endl;
 		cout << "Ship: ";
@@ -410,7 +603,7 @@ public:
 		//defineTrianglePoints(p, slope.x(), slope.y());
 		for (int y = 31; y < screen.height(); y++) {
 			for (int x = 0; x < screen.width(); x++) {
-            //cout << "Point: (" << x << ", " << y << ")" << endl;
+			//cout << "Point: (" << x << ", " << y << ")" << endl;
 				string thing = to_string(screen.get(y, x));
 				first[thing] += 1;
 				Point p = shipCenter;
@@ -442,82 +635,82 @@ public:
 					cout << "a";
 				} else if (thing == "38"){
 					cout << "%";
-            } else if (thing == "44"){      // Land on a Planet
-            	cout << "%";
-            } else if (thing == "54"){      // Turret/Bunker
-            	cout << "I";
-            } else if (thing == "52"){
-            	cout << "*";
-            } else if (thing == "56"){
-            	cout << "R";
-            } else if (thing == "60"){
-            	cout << "T";
-            } else if (thing == "66"){
-            	cout << "Q";
-            } else if (thing == "74"){
-            	cout << "b";
-            } else if (thing == "78"){
-            	cout << "Y";
-            } else if (thing == "86"){
-            	cout << "X";
-            } else if (thing == "92"){
-            	cout << "c";
-            } else if (thing == "94"){
-            	cout << "~";
-            } else if (thing == "116"){
-            	cout << "P";
-            } else if (thing == "118"){     // Fuel
-            	cout << "E";
-            } else if (thing == "120"){
-            	cout << "F";
-            } else if (thing == "122"){     // Planet in Upper Right Hand Corner
-            	cout << "d";
-            } else if (thing == "136"){
-            	cout << "e";
-            } else if (thing == "138"){
-            	cout << "f";
-            } else if (thing =="140"){
-            	cout << "g";
-            } else if (thing == "156"){     // Starting Circle
-            	cout << "h";
-            } else if (thing == "166"){
-            	cout << "S";
-            } else if (thing == "170"){     // Ship Doing Nothing
-            	cout << "|";
-            } else if (thing == "175"){     // Ship With Shiled On
-            	cout << "@";
-            } else if (thing == "188"){
-            	cout << "j";
-            } else if (thing == "194"){
-            	cout << "Z";
-            } else if (thing == "196"){
-            	cout << "]";
-			}  else if (thing == "198"){
-				cout << "W";
-            }  else if (thing == "216"){    // Planet in Left Upper Corner
-            	cout << "k";
-            } else if (thing == "244"){
-            	cout << "O";
-            }  else if (thing == "250"){
-            	cout << "^";
-            } else{
-            	cout << "U";
-            }
-            // os << screen.get(y, x);
-            // string str = os.str(); // str is what you want.
-            // cout << str << " ";
-            
-        }
-        cout << endl;
-    }
-    cout << "================================================" <<endl;
-    cout << endl;
-    
-   // for(auto elem : first)
-    //{
-    //	cout << elem.first << " " << elem.second << "\n";
-    //}
-}
+				} else if (thing == "44"){      // Land on a Planet
+					cout << "%";
+				} else if (thing == "54"){      // Turret/Bunker
+					cout << "I";
+				} else if (thing == "52"){
+					cout << "*";
+				} else if (thing == "56"){
+					cout << "R";
+				} else if (thing == "60"){
+					cout << "T";
+				} else if (thing == "66"){
+					cout << "Q";
+				} else if (thing == "74"){
+					cout << "b";
+				} else if (thing == "78"){
+					cout << "Y";
+				} else if (thing == "86"){
+					cout << "X";
+				} else if (thing == "92"){
+					cout << "c";
+				} else if (thing == "94"){
+					cout << "~";
+				} else if (thing == "116"){
+					cout << "P";
+				} else if (thing == "118"){     // Fuel
+					cout << "E";
+				} else if (thing == "120"){
+					cout << "F";
+				} else if (thing == "122"){     // Planet in Upper Right Hand Corner
+					cout << "d";
+				} else if (thing == "136"){
+					cout << "e";
+				} else if (thing == "138"){
+					cout << "f";
+				} else if (thing =="140"){
+					cout << "g";
+				} else if (thing == "156"){     // Starting Circle
+					cout << "h";
+				} else if (thing == "166"){
+					cout << "S";
+				} else if (thing == "170"){     // Ship Doing Nothing
+					cout << "|";
+				} else if (thing == "175"){     // Ship With Shiled On
+					cout << "@";
+				} else if (thing == "188"){
+					cout << "j";
+				} else if (thing == "194"){
+					cout << "Z";
+				} else if (thing == "196"){
+					cout << "]";
+				}  else if (thing == "198"){
+					cout << "W";
+				}  else if (thing == "216"){    // Planet in Left Upper Corner
+					cout << "k";
+				} else if (thing == "244"){
+					cout << "O";
+				}  else if (thing == "250"){
+					cout << "^";
+				} else{
+					cout << "U";
+				}
+				// os << screen.get(y, x);
+				// string str = os.str(); // str is what you want.
+				// cout << str << " ";
+			
+			}
+			cout << endl;
+		}
+		cout << "================================================" <<endl;
+		cout << endl;
+		
+		// for(auto elem : first)
+		//{
+		//	cout << elem.first << " " << elem.second << "\n";
+		//}
+	}
 
 };
 

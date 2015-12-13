@@ -1,0 +1,30 @@
+// Me and Kegan
+250
+
+
+// if speed is less than 5 in any direction then  thurstshoot and turn right otherwise do a random action from no thurust list
+Episode 0 ended with score: 250
+Episode 1 ended with score: 350
+Episode 2 ended with score: 0
+Episode 3 ended with score: 450
+Episode 4 ended with score: 100
+Episode 5 ended with score: 0
+Episode 6 ended with score: 100
+Episode 7 ended with score: 250
+Episode 8 ended with score: 250
+Episode 9 ended with score: 250
+Average Reward: 200
+
+// Random angent with minimal action set
+Episode 0 ended with score: 0
+Episode 1 ended with score: 350
+Episode 2 ended with score: 250
+Episode 3 ended with score: 250
+Episode 4 ended with score: 250
+Episode 5 ended with score: 0
+Episode 6 ended with score: 750
+Episode 7 ended with score: 500
+Episode 8 ended with score: 0
+Episode 9 ended with score: 0
+Average Reward: 235
+

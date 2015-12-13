@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
                 number = 0;
                 count = 0;
                 reset = true;
-                cout << " DIE " << endl;
+                //cout << " DIE " << endl;
             } else{
             	reset = false;
             }
