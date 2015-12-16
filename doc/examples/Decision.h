@@ -19,20 +19,20 @@
 using namespace ale;
 using namespace std;
    // Two Turns to make 45 degrees
-// #ifndef to_string
-// template <typename T>
-//     std::string to_string(T value)
-//     {
-//       //create an output string stream
-//       std::ostringstream os ;
+#ifndef to_string
+template <typename T>
+    std::string to_string(T value)
+    {
+      //create an output string stream
+      std::ostringstream os ;
 
-//       //throw the value into the string stream
-//       os << value ;
+      //throw the value into the string stream
+      os << value ;
 
-//       //convert the string stream into a string and return
-//       return os.str() ;
-//     }
-// #endif
+      //convert the string stream into a string and return
+      return os.str() ;
+    }
+#endif
 
 class Decision{
 private:
@@ -43,7 +43,7 @@ private:
 	int actionTurns = 0;
 	int timeToUpdatePoints = 5;
 	int timePoints = 0;
-	int direction; // 0 -> Up, 4 -> Right, 8 -> Down, 12 -> Left, 
+	int direction; // 0 -> Up, 4 -> Right, 8 -> Down, 12 -> Left,
 	bool flag_top_left, flag_top, flag_top_right, flag_right, flag_bottom_right, flag_bottom, flag_bottom_left, flag_left = false;
 	bool flag_top_left_R, flag_top_R, flag_top_right_R, flag_right_R, flag_bottom_right_R, flag_bottom_R, flag_bottom_left_R, flag_left_R = false;
 	bool flag_front_All, flag_right_All, flag_back_All, flag_left_All = false;
@@ -116,7 +116,7 @@ private:
 
 	}
 	void defineTrianglePoints(Point ship, int xSlope, int ySlope){
-	
+
 		Point first = ship;
 		Point front = Point(ship.x() + 2*xSlope, ship.y() + 2*ySlope);
 		Point second = Point(front.x() + (xSlope + 10), front.y() - ySlope);
@@ -235,7 +235,7 @@ private:
 		// cout << endl;
 		// cout << topLeftCount << " " << topCount << " " << topRightCount << endl;
 		// cout << leftCount << " # " << rightCount << endl;
-		// cout << bottomLeftCount << " " << bottomCount << " " << bottomRightCount << endl;				
+		// cout << bottomLeftCount << " " << bottomCount << " " << bottomRightCount << endl;
 	}
 
 	bool isShip(string character){
@@ -284,7 +284,7 @@ private:
 				flag_east = false;
 		}
 
-				// EASt  ** TODO ** 
+				// EASt  ** TODO **
 		one = to_string(screen.get(y - 2, x));
 		two = to_string(screen.get(y - 1, x));
 		three = to_string(screen.get(y, x));
@@ -533,8 +533,8 @@ private:
 		if (triangleThree.x() == triangleOne.x() && triangleThree.y() == triangleOne.y()) {
 			return 0;
 		}
-			
-		
+
+
 
 
 		int Count = 0;
@@ -582,13 +582,13 @@ private:
 
 	void printDirection(){
 		if (flag_north){
-			cout << "North T:" << actionTurns << endl; 
+			cout << "North T:" << actionTurns << endl;
 		} else if (flag_east){
-			cout << "East T:" << actionTurns << endl; 
+			cout << "East T:" << actionTurns << endl;
 		} else if (flag_south){
-			cout << "South T:" << actionTurns << endl; 
+			cout << "South T:" << actionTurns << endl;
 		} else if (flag_west){
-			cout << "West T:" << actionTurns <<endl; 
+			cout << "West T:" << actionTurns <<endl;
 		}
 	}
 	// cout << slope << endl;
@@ -598,7 +598,7 @@ private:
 	int number = 0;
 
 public:
-	
+
 
 	Decision(ActionVect minimal_actions, ALEScreen s):screen(s){
 		shipCenter = Point(-1, -1);
@@ -642,7 +642,7 @@ public:
 		badPoints.push_back("54");
 		badPoints.push_back("38");
 		//badPoints.push_back("122");
-		
+
 		badPoints.push_back("36"); // bad planet left and bad guys
 		badPoints.push_back("92"); // bottom right planet
 		badPoints.push_back("188"); // bottom left planet
@@ -680,7 +680,7 @@ public:
 		if (action == noop){
 			action = no_thrust_actions[rand() % no_thrust_actions.size()];
 		}
-	  
+
 	   // if(number < 10){
 	   //     action = noop;
 	   //     number++;
@@ -691,7 +691,7 @@ public:
 	   //     	countTurns++;
 	   //     }else{
 	   //     	countTurns = 0;
-	   //     	number = 0; 
+	   //     	number = 0;
 	   //     }
 	   //     // cout << "Turn " << count << " " << to_string(turnRight) << endl;
 	   // }
@@ -721,7 +721,7 @@ public:
 		}
 
 
-		
+
 		if (flag_back_All || flag_bottom){
 			return thrust;
 		}
@@ -862,13 +862,13 @@ public:
 				// os << screen.get(y, x);
 				// string str = os.str(); // str is what you want.
 				// cout << str << " ";
-			
+
 			}
 			cout << endl;
 		}
 		cout << "================================================" <<endl;
 		cout << endl;
-		
+
 		// for(auto elem : first)
 		//{
 		//	cout << elem.first << " " << elem.second << "\n";

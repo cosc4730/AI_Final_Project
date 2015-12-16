@@ -26,6 +26,7 @@
 
 #include "Point.h"
 #include "Decision.h"
+#include "Timer.h"
 
 #ifdef __USE_SDL
 #include <SDL.h>
@@ -52,17 +53,17 @@ Action getAction(ActionVect av, ALEState state, ALEInterface& ale) {
 
 int main(int argc, char** argv) {
     ALEInterface ale;
-    
+
     // Get & Set the desired settings
     ale.setInt("random_seed", 123);
     //The default is now 0 because we don't want stochasity
     ale.setFloat("repeat_action_probability", 0);
-    
+
 #ifdef __USE_SDL
     ale.setBool("display_screen", true);
     ale.setBool("sound", false);
 #endif
-    
+
     /// Uncomment to Record
     //    std::string recordPath = "record";
     //    std::cout << std::endl;
@@ -77,21 +78,23 @@ int main(int argc, char** argv) {
     //    std::string cmd = "mkdir ";
     //    cmd += recordPath;
     //    system(cmd.c_str());
-    
-    
+
+
     // Load the ROM file. (Also resets the system for new settings to
     // take effect.)
     ale.loadROM("gravitar.bin");
-    
+
     // Get the vector of minimal actions
     const ActionVect minimal_actions = ale.getMinimalActionSet();
-     
+
     // Erase actions that move, but don't fire
     //minimal_actions.erase(minimal_actions.begin() + 2, minimal_actions.begin() + 10);
-    
+
     // Store all rewards earned in all episodes
     float allRewards = 0;
-    
+    double allTimes = 0;
+    Timer timer;
+
     // Play 10 episodes
     int episodes = 10;
     int number = 0;
@@ -100,10 +103,12 @@ int main(int argc, char** argv) {
     bool reset = false;
 
     Decision decision = Decision(ale.getMinimalActionSet(), ale.getScreen());
-        
+
 
     for (int episode=0; episode<episodes; episode++) {
         float totalReward = 0;
+        double episodeTime = 0;
+        timer.start();
         while (!ale.game_over()) {
             if (ale.lives() < lastLives){
                 lastLives = ale.lives();
@@ -120,16 +125,18 @@ int main(int argc, char** argv) {
 			//decision.print();
             totalReward += reward;
         }
+        episodeTime = timer.stop();
         count = 0;
         number = 0;
         allRewards += totalReward;
-        cout << "Episode " << episode << " ended with score: " << totalReward << endl;
+        allTimes += episodeTime;
+        cout << "Episode " << episode << " ended with score: " << totalReward << " with time: "<< episodeTime <<endl;
         ale.reset_game();
     }
-    
+
     // Display average reward per game
-    cout << "Average Reward: " << (allRewards / episodes) << endl;
-    
+    cout << "Average Reward: " << (allRewards / episodes) << " Average Time: " << (allTimes/episodes) << endl;
+
     return 0;
 }
 
