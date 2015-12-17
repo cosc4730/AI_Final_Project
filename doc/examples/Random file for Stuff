@@ -101,3 +101,145 @@
 //
 //}
 //
+
+
+
+
+
+
+
+
+
+            // if(actionTurns == 0){
+            //    if ((flag_north && flag_move_n) || (flag_east && flag_move_e) || (flag_south && flag_move_s) || (flag_west && flag_move_w)){
+            //          if(flag_front_Any){
+            //                return turnRight;
+            //          }
+            //          if(flag_left_Any){
+            //                return thrustRight;
+            //          }
+            //          if(flag_right_Any){
+            //                return thrustLeft;
+            //          }
+            //          if (flag_top_R || flag_top_left_R || flag_left_R){
+            //                return turnRight;
+            //          }
+            //          if (flag_top_R || flag_top_right_R || flag_right_R){
+            //                return turnLeft;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_left_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_right_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if(flag_back_Any){
+            //                return thrust;
+            //          }
+            //    }
+            // } else if (actionTurns > 0){
+            //    if ((flag_north && flag_move_ne) || (flag_east && flag_move_se) || (flag_south && flag_move_sw) || (flag_west && flag_move_nw)){
+            //          if(flag_front_Any){
+            //                return turnRight;
+            //          }
+            //          if(flag_left_Any){
+            //                return thrustRight;
+            //          }
+            //          if(flag_right_Any){
+            //                return thrustLeft;
+            //          }
+            //          if (flag_top_R || flag_top_left_R || flag_left_R){
+            //                return turnRight;
+            //          }
+            //          if (flag_top_R || flag_top_right_R || flag_right_R){
+            //                return turnLeft;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_left_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_right_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if(flag_back_Any){
+            //                return thrust;
+            //          }
+            //    }
+            // } else{
+            //    if ((flag_north && flag_move_nw) || (flag_east && flag_move_ne) || (flag_south && flag_move_se) || (flag_west && flag_move_sw)){
+            //          if(flag_front_Any){
+            //                return turnRight;
+            //          }
+            //          if(flag_left_Any){
+            //                return thrustRight;
+            //          }
+            //          if(flag_right_Any){
+            //                return thrustLeft;
+            //          }
+            //          if (flag_top_R || flag_top_left_R || flag_left_R){
+            //                return turnRight;
+            //          }
+            //          if (flag_top_R || flag_top_right_R || flag_right_R){
+            //                return turnLeft;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_left_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if (flag_bottom_R || flag_bottom_right_R || flag_bottom_R){
+            //                return thrustRight;
+            //          }
+            //          if(flag_back_Any){
+            //                return thrust;
+            //          }
+            //    }                 
+            // }
+
+             //cout << "No ACtion" << endl;
+            // if (flag_front_All){
+            //    if(flag_north && flag_move_n){
+            //          return turnRight;
+            //    }
+            //    if(flag_east && flag_move_e)
+            // }
+            // if (flag_north && flag_move_n && flag_front_All){
+
+            // }
+
+
+
+
+            // if(flag_front_All){
+            //    return turnRight;
+            // }
+
+            // if (flag_left_All || (flag_bottom && flag_left_Any)){
+            //    return thrustRight;
+            // }
+
+            // if (flag_right_All || (flag_bottom && flag_right_Any)){
+            //    return thrustLeft;
+            // }
+
+
+
+            // if (flag_back_All || flag_bottom){
+            //    return thrust;
+            // }
+
+            // if (flag_top_R){
+            //    return turnRight;
+            // } else if (flag_top_left_R){
+            //    return thrustRight;
+            // } else if (flag_top_right_R){
+            //    return thrustLeft;
+            // } else if (flag_left_R){
+            //    return thrustRight;
+            // } else if (flag_right_R){
+            //    return thrustLeft;
+            // } else if (flag_bottom_left_R){
+            //    return thrustRight;
+            // } else if (flag_bottom_right_R){
+            //    return thrustLeft;
+            // }
+            // if ( abs(slope.x()) < 1 && abs(slope.y())< 1){
+            //    return shootThrustRight;
+            // }

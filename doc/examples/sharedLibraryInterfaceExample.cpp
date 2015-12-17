@@ -60,24 +60,24 @@ int main(int argc, char** argv) {
     ale.setFloat("repeat_action_probability", 0);
 
 #ifdef __USE_SDL
-    ale.setBool("display_screen", true);
+    ale.setBool("display_screen", false);
     ale.setBool("sound", false);
 #endif
 
     /// Uncomment to Record
-    //    std::string recordPath = "record";
-    //    std::cout << std::endl;
-    //
-    //    // Set record flags
-    //    ale.setString("record_screen_dir", recordPath.c_str());
-    //    ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
-    //    // We set fragsize to 64 to ensure proper sound sync
-    //    ale.setInt("fragsize", 64);
-    //
-    //    // Not completely portable, but will work in most cases
-    //    std::string cmd = "mkdir ";
-    //    cmd += recordPath;
-    //    system(cmd.c_str());
+       // std::string recordPath = "record";
+       // std::cout << std::endl;
+    
+       // // Set record flags
+       // ale.setString("record_screen_dir", recordPath.c_str());
+       // ale.setString("record_sound_filename", (recordPath + "/sound.wav").c_str());
+       // // We set fragsize to 64 to ensure proper sound sync
+       // ale.setInt("fragsize", 64);
+    
+       // // Not completely portable, but will work in most cases
+       // std::string cmd = "mkdir ";
+       // cmd += recordPath;
+       // system(cmd.c_str());
 
 
     // Load the ROM file. (Also resets the system for new settings to
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
     Timer timer;
 
     // Play 10 episodes
-    int episodes = 10;
+    int episodes = 200;
     int number = 0;
     int count = 0;
     int lastLives = ale.lives();
@@ -125,7 +125,9 @@ int main(int argc, char** argv) {
 			//decision.print();
             totalReward += reward;
         }
-        episodeTime = timer.stop();
+        timer.stop();
+        episodeTime = timer();
+        timer.reset();
         count = 0;
         number = 0;
         allRewards += totalReward;

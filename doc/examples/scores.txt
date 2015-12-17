@@ -41,3 +41,18 @@ Episode 7 ended with score: 0
 Episode 8 ended with score: 0
 Episode 9 ended with score: 0
 Average Reward: 155
+
+
+// Random Agent 
+Random seed is 123
+Episode 0 ended with score: 500 with time: 45.589
+Episode 1 ended with score: 100 with time: 37.9264
+Episode 2 ended with score: 100 with time: 43.2341
+Episode 3 ended with score: 250 with time: 47.2059
+Episode 4 ended with score: 100 with time: 40.6291
+Episode 5 ended with score: 250 with time: 42.4495
+Episode 6 ended with score: 250 with time: 44.1032
+Episode 7 ended with score: 250 with time: 43.2217
+Episode 8 ended with score: 0 with time: 40.1669
+Episode 9 ended with score: 250 with time: 38.9139
+Average Reward: 205 Average Time: 42.344
